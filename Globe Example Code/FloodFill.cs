@@ -1,3 +1,23 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public enum TileGroupType
+{
+    Water,
+    Land
+}
+
+public class TileGroup  {
+
+    public TileGroupType Type;
+    public List<Tile> Tiles;
+
+    public TileGroup()
+    {
+        Tiles = new List<Tile> ();
+    }
+}
+
 private void FloodFill()
 {
     // Use a stack instead of recursion
@@ -70,4 +90,4 @@ private void FloodFill(Tile tile, ref TileGroup tiles, ref Stack<Tile> stack)
     t = GetRight (tile);
     if (!t.FloodFilled && tile.Collidable == t.Collidable)
         stack.Push (t);
-}   
+}
