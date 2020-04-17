@@ -14,13 +14,9 @@ public class Tile
     public int Bitmask;
 
     // Neighbors
-    public Tile Top, Bottom, Left, Right;
+    public Tile TopNeighbor, BottomNeighbor, LeftNeighbor, RightNeighbor;
 
     public bool Zoned;
-
-    public Tile()
-    {
-    }
 
     // Classifies tile based on position within a group of like tiles (edge vs internal)
     public void UpdateBitmask()
