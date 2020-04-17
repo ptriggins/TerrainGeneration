@@ -1,6 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public enum DensityType
+{
+    Urban,
+    Suburbarban,
+    Rural,
+    Wilderness
+}
+
 public abstract class Generator : MonoBehaviour
 {
 
@@ -15,12 +23,13 @@ public abstract class Generator : MonoBehaviour
     [SerializeField]
     protected int Height = 512;
 
+    [Header("Noise")]
     [SerializeField]
     protected int Octaves = 6;              // Level of complexity
     [SerializeField]
     protected double Frequency = 1.25;      // Interval between samples
 
-    [Header("Density Classifications")]
+    [Header("Density Level")]
     [SerializeField]
     protected float Urban = 0.2f;
     [SerializeField]
@@ -36,13 +45,16 @@ public abstract class Generator : MonoBehaviour
 
     protected Tile[,] Tiles;
 
-    //protected List<TileGroup> Cities= new List<TileGroup>();
-    //protected List<TileGroup> Towns = new List<TileGroup>();
+    protected List<Zone> Cities = new List<Zone>();
+    protected List<Zone> Suburbs = new List<Zone>();
+    protected List<Zone> Farms = new List<Zone>();
+    protected List<Zone> Forests = new List<Zone>();
 
-    // Gameobject that displays map texture
+
+    // Displays map texture
     protected MeshRenderer DensityRenderer;
 
-    // Called on first execution
+    // Called on script's first execution
     void Start()
     {
         Instantiate();
@@ -201,19 +213,23 @@ public abstract class Generator : MonoBehaviour
             for (int y = 0; y < Height; y++)
             {
 
+                // Finds a tile that has not already been colored to start a new group
                 Tile tile = Tiles[x, y];
+                if (tile.FloodFilled) continue;
 
-                //Tile already flood filled, skip
-                if (t.FloodFilled) continue;
+                TileGroup group = new TileGroup();
+                group.DensityType = tile.DensityType;
+                stack.Push(tile);
 
-                // Land
-                if (t.Collidable)
+                while (stack.Count > 0)
                 {
-                    TileGroup group = new TileGroup();
-                    group.Type = TileGroupType.Land;
-                    stack.Push(t);
+                    FloodFill(stack.Pop(), ref group, ref stack);
 
-                    while (stack.Count > 0)
+                    if (group.Tiles.Count > 0)
+                        Lands.Add(group);
+                }
+
+                while (stack.Count > 0)
                     {
                         FloodFill(stack.Pop(), ref group, ref stack);
                     }
@@ -221,23 +237,39 @@ public abstract class Generator : MonoBehaviour
                     if (group.Tiles.Count > 0)
                         Lands.Add(group);
                 }
-                // Water
-                else
-                {
-                    TileGroup group = new TileGroup();
-                    group.Type = TileGroupType.Water;
-                    stack.Push(t);
-
-                    while (stack.Count > 0)
-                    {
-                        FloodFill(stack.Pop(), ref group, ref stack);
-                    }
-
-                    if (group.Tiles.Count > 0)
-                        Waters.Add(group);
-                }
             }
         }
+    }
+
+    private void FloodFill(Tile tile, ref TileGroup tiles, ref Stack<Tile> stack)
+    {
+        // Validate
+        if (tile == null)
+            return;
+        if (tile.FloodFilled)
+            return;
+        if (tiles.Type == TileGroupType.Land && !tile.Collidable)
+            return;
+        if (tiles.Type == TileGroupType.Water && tile.Collidable)
+            return;
+
+        // Add to TileGroup
+        tiles.Tiles.Add(tile);
+        tile.FloodFilled = true;
+
+        // floodfill into neighbors
+        Tile t = GetTop(tile);
+        if (t != null && !t.FloodFilled && tile.Collidable == t.Collidable)
+            stack.Push(t);
+        t = GetBottom(tile);
+        if (t != null && !t.FloodFilled && tile.Collidable == t.Collidable)
+            stack.Push(t);
+        t = GetLeft(tile);
+        if (t != null && !t.FloodFilled && tile.Collidable == t.Collidable)
+            stack.Push(t);
+        t = GetRight(tile);
+        if (t != null && !t.FloodFilled && tile.Collidable == t.Collidable)
+            stack.Push(t);
     }
 
 }

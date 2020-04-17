@@ -57,12 +57,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\PopulationMap\DensityTextureGenerator.cs" />
-    <Compile Include="Assets\Scripts\PopulationMap\Generator.cs" />
-    <Compile Include="Assets\Scripts\PopulationMap\MapData.cs" />
-    <Compile Include="Assets\Scripts\PopulationMap\Tile.cs" />
-    <Compile Include="Assets\Scripts\PopulationMap\TileGroup.cs" />
-    <Compile Include="Assets\Scripts\RoadMain.cs" />
+    <Compile Include="Assets\Scripts\DensityTextureGenerator.cs" />
+    <Compile Include="Assets\Scripts\Generator.cs" />
+    <Compile Include="Assets\Scripts\MapData.cs" />
+    <Compile Include="Assets\Scripts\Tile.cs" />
+    <Compile Include="Assets\Scripts\Zone.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/ptylerrj/Documents/GitHub/TerrainGeneration/myCityGen/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

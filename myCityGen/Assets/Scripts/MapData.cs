@@ -1,6 +1,7 @@
-﻿public class MapData
+﻿
+// Stores data sampled from a noise map
+public class MapData
 {
-
     public float[,] Data;
     public float Min { get; set; }
     public float Max { get; set; }
