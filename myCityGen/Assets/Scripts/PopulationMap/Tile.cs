@@ -13,14 +13,15 @@ public enum DensityType
 
 public class Tile
 {
-    public DensityType DensityType;
 
-    // Personal Attributes
+    // Density
     public DensityType DensityType;
     public float DensityValue { get; set; }
+
+    // Location and Appearance
     public int X, Y;
-    public int Bitmask;
     public Color Color = Color.black;
+    public int Bitmask;
 
     // Neighbors
     public Tile Left;
@@ -29,14 +30,15 @@ public class Tile
     public Tile Bottom;
 
     // Flags
-    public bool Collidable;
     public bool FloodFilled;
 
+    // Constructor
     public Tile()
     {
     }
 
-    public void UpdatBitmask()
+    // Classifies tile based on position within a group of like tiles (edge vs internal)
+    public void UpdateBitmask()
     {
         int count = 0;
 
