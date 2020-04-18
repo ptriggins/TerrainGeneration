@@ -1,22 +1,23 @@
 ﻿using UnityEngine;
 
-// A portion of the map of a particular density level
 public class Tile
 {
-
-    // Density
-    public DensityType DensityType;
-    public float DensityLevel { get; set; }
-
-    // Location and Appearance
     public int X, Y;
-    public Color Color = Color.black;
-    public int Bitmask;
+    public float Density { get; set; }
+    public DensityType DensityType;
 
-    // Neighbors
     public Tile TopNeighbor, BottomNeighbor, LeftNeighbor, RightNeighbor;
-
+    public int Bitmask;
+    public Color Color;
     public bool Zoned;
+
+    public Tile(int x, int y, float value)
+    {
+        X = x;
+        Y = y;
+        Density = value;
+        DenstiyType = GetDensityType(Value);
+    }
 
     // Classifies tile based on position within a group of like tiles (edge vs internal)
     public void UpdateBitmask()

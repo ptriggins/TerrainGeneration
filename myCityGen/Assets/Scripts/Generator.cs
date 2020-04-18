@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using AccidentalNoise;
 
 public enum DensityType
 {
@@ -12,39 +13,39 @@ public enum DensityType
 public abstract class Generator : MonoBehaviour
 {
 
-    // Seed used for noise generation
+    // Seed used to generate noise
     protected int Seed;
 
     // Sliders
 
     [Header("Map Size")]
     [SerializeField]
-    protected int Width = 512;
+    public int Width = 512;
     [SerializeField]
-    protected int Height = 512;
+    public int Height = 512;
 
     [Header("Noise")]
     [SerializeField]
-    protected int Octaves = 6;              // Level of complexity
+    public int Octaves = 6;              // Level of complexity
     [SerializeField]
-    protected double Frequency = 1.25;      // Interval between samples
+    public double Frequency = 1.25;      // Interval between samples
 
     [Header("Density Level")]
     [SerializeField]
-    protected float Urban = 0.2f;
+    public float Urban = 0.2f;
     [SerializeField]
-    protected float Suburban = 0.4f;
+    public float Suburban = 0.4f;
     [SerializeField]
-    protected float Rural = 0.5f;
+    public float Rural = 0.5f;
     [SerializeField]
-    protected float Wilderness = 0.7f;
+    public float Wilderness = 0.7f;
 
 
-    // Stores a map of noise samples
-    protected MapData densityData;
+    // Noise Sampling
+    ImplicitFractal HeightMap;
+    MapData DensityData;
 
     protected Tile[,] Tiles;
-
 
     // Lists to store the zones  of the map'
     protected List<Zone> Cities = new List<Zone>();
@@ -63,29 +64,15 @@ public abstract class Generator : MonoBehaviour
         Generate();
     }
 
-    protected abstract void Initialize();
-    protected abstract void GetData();
-
-    // Creates copy of the generator object, sets seed and renderer object
-    protected virtual void Instantiate()
+    private void Initialize()
     {
-        Seed = UnityEngine.Random.Range(0, int.MaxValue);
-        DensityRenderer = transform.Find("DensityTexture").GetComponent<MeshRenderer>();
-        Initialize();
-    }
-
-    protected virtual void Generate()
-    {
-        GetData();
-        LoadTiles();
-        UpdateNeighbors();
-
-        UpdateBitmasks();
-        ZoneMap();
-
-        GenerateDensityMap();
-
-        DensityRenderer.materials[0].mainTexture = DensityTextureGenerator.GetDensityTexture(Width, Height, Tiles);
+        // Initialize the noise fractal
+        HeightMap = new ImplicitFractal(FractalType.MULTI,
+                                       BasisType.SIMPLEX,
+                                       InterpolationType.QUINTIC,
+                                       Octaves,
+                                       Frequency,
+                                       UnityEngine.Random.Range(0, int.MaxValue));
     }
 
     // Called for each frame
@@ -97,6 +84,53 @@ public abstract class Generator : MonoBehaviour
             Seed = UnityEngine.Random.Range(0, int.MaxValue);
             Initialize();
             Generate();
+        }
+    }
+
+    // Creates copy of the generator object, sets seed and renderer object
+    protected virtual void Instantiate()
+    {
+        Seed = UnityEngine.Random.Range(0, int.MaxValue);
+        DensityRenderer = transform.Find("DensityTexture").GetComponent<MeshRenderer>();
+        Initialize();
+    }
+
+    protected virtual void Generate()
+    {
+        // Samples noise and builds the map
+        GetData(HeightMap, ref DensityData);
+        LoadTiles();
+        UpdateNeighbors();
+
+        UpdateBitmasks();
+        ZoneMap();
+
+        GenerateDensityMap();
+
+        DensityRenderer.materials[0].mainTexture = DensityTextureGenerator.GetDensityTexture(Width, Height, Tiles);
+    }
+
+    private void GetData(ImplicitModuleBase module, ref MapData mapData)
+    {
+        mapData = new MapData(Width, Height);
+
+        // loop through each x,y point - get height value
+        for (var x = 0; x < Width; x++)
+        {
+            for (var y = 0; y < Height; y++)
+            {
+                //Sample the noise at smaller intervals
+                float x1 = x / (float)Width;
+                float y1 = y / (float)Height;
+
+                float value = (float)HeightMap.Get(x1, y1);
+
+                //keep track of the max and min values found
+                if (value > mapData.Max) mapData.Max = value;
+                if (value < mapData.Min) mapData.Min = value;
+
+                mapData.Data[x, y] = value;
+            }
         }
     }
 
@@ -131,7 +165,6 @@ public abstract class Generator : MonoBehaviour
             return tile.DensityValue;
     }
 
-    // Builds an array of tiles
     private void LoadTiles()
     {
         Tiles = new Tile[Width, Height];
@@ -145,26 +178,10 @@ public abstract class Generator : MonoBehaviour
                 tile.Y = y;
 
                 // Calculates tiles density value
-                float densityValue = densityData.Data[x, y];
-                densityValue = (densityValue - densityData.Min) / (densityData.Max - densityData.Min);
+                float densityValue = DensityData.Data[x, y];
+                densityValue = (densityValue - DensityData.Min) / (DensityData.Max - DensityData.Min);
 
-                // Sets tile's density type according to its density value
-                if (densityValue < Wilderness)
-                {
-                    tile.DensityType = DensityType.Wilderness;
-                }
-                else if (densityValue < Rural)
-                {
-                    tile.DensityType = DensityType.Rural;
-                }
-                else if (densityValue < Suburban)
-                {
-                    tile.DensityType = DensityType.Suburban;
-                }
-                else
-                {
-                    tile.DensityType = DensityType.Urban;
-                }
+                
                 tile.DensityValue = densityValue;
 
                 Tiles[x, y] = tile;
