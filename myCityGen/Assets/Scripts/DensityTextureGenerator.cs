@@ -2,13 +2,6 @@
 
 public static class DensityTextureGenerator
 {
-
-    // Density Map Colors
-    private static Color UrbanColor = new Color();
-    private static Color SuburbanColor = new Color();
-    private static Color RuralColor = new Color();
-    private static Color WildernessColor = new Color();
-
     public static Texture2D GetDensityTexture(int width, int height, Tile[,] tiles)
     {
         var texture = new Texture2D(width, height);
@@ -18,22 +11,7 @@ public static class DensityTextureGenerator
         {
             for (var y = 0; y < height; y++)
             {
-                switch (tiles[x, y].DensityType)
-                {
-                    case DensityType.Urban:
-                        pixels[x + y * width] = UrbanColor;
-                        break;
-                    case DensityType.Suburban:
-                        pixels[x + y * width] = SuburbanColor;
-                        break;
-                    case DensityType.Rural:
-                        pixels[x + y * width] = RuralColor;
-                        break;
-                    case DensityType.Wilderness:
-                        pixels[x + y * width] = WildernessColor;
-                        break;
-                }
-
+                pixels[x + y * width] = tiles[x, y].DensityType.Color;
             }
         }
 

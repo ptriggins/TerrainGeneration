@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using AccidentalNoise;
 
-public enum DensityType
+[System.Serializable]
+public struct DensityType
 {
-    Urban,
-    Suburban,
-    Rural,
-    Wilderness
+    public string Name;
+    public float Max;
+    public Color Color;
 }
 
 public abstract class Generator : MonoBehaviour
@@ -27,16 +27,7 @@ public abstract class Generator : MonoBehaviour
     [SerializeField]
     public double Frequency = 1.25;      // Interval between samples
 
-    [Header("Density Level")]
-    [SerializeField]
-    public float Urban = 0.2f;
-    [SerializeField]
-    public float Suburban = 0.4f;
-    [SerializeField]
-    public float Rural = 0.5f;
-    [SerializeField]
-    public float Wilderness = 0.7f;
-
+    public DensityType[] DensityTypes;
 
     // Store nosie samples
     ImplicitFractal HeightMap;
@@ -48,7 +39,6 @@ public abstract class Generator : MonoBehaviour
     protected List<Zone> Suburbs = new List<Zone>();
     protected List<Zone> Farms = new List<Zone>();
     protected List<Zone> Forests = new List<Zone>();
-
 
     // Displays map texture
     protected MeshRenderer DensityRenderer;
@@ -131,20 +121,17 @@ public abstract class Generator : MonoBehaviour
         {
             for (var y = 0; y < Height; y++)
             {
-
                 float density = DensityData.Data[x, y];
                 density = (density - DensityData.Min) / (DensityData.Max - DensityData.Min);
 
-                DensityType densityType;
-                if (density < Wilderness)
-                    densityType = DensityType.Wilderness;
-                else if (density < Rural)
-                    densityType = DensityType.Rural;
-                else if (density < Suburban)
-                    densityType = DensityType.Suburban;
-                else
-                    densityType = DensityType.Urban;
-
+                DensityType densityType = DensityTypes[0];
+                for (int i = 0; i < DensityTypes.Length; i++)
+                {
+                    if (density < DensityTypes[i].Max)
+                    {
+                        densityType = DensityTypes[i];
+                    }
+                }
 
                 Tile tile = new Tile(x, y, density, densityType);
                 Tiles[x, y] = tile;
