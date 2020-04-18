@@ -11,26 +11,29 @@ public class Tile
     public Color Color;
     public bool Zoned;
 
-    public Tile(int x, int y, float value)
+    public Tile(int x, int y, float density, DensityType DensityType)
     {
         X = x;
         Y = y;
-        Density = value;
-        DenstiyType = GetDensityType(Value);
+        Density = density;
+        TopNeighbor = null;
+        BottomNeighbor = null;
+        LeftNeighbor = null;
+        RightNeighbor = null;
     }
 
-    // Classifies tile based on position within a group of like tiles (edge vs internal)
-    public void UpdateBitmask()
+    // Classifies tile based on position within a region of like tiles
+    public void SetBitmask()
     {
         int count = 0;
 
-        if (Top != null && Top.DensityType == DensityType)
+        if (TopNeighbor != null && TopNeighbor.DensityType == DensityType)
             count += 1;
-        if (Bottom != null && Bottom.DensityType == DensityType)
+        if (BottomNeighbor != null && BottomNeighbor.DensityType == DensityType)
             count += 4;
-        if (Left != null && Left.DensityType == DensityType)
+        if (LeftNeighbor != null && LeftNeighbor.DensityType == DensityType)
             count += 8;
-        if (Right != null && Right.DensityType == DensityType)
+        if (RightNeighbor != null && RightNeighbor.DensityType == DensityType)
             count += 2;
 
         Bitmask = count;
