@@ -4,21 +4,17 @@ using UnityEngine;
 
 public class MeshData
 {
-    public Vector3[] Vertices;      // Points that will be drawn in 3D space
-    public int[] Triangles;         // Triangular surfaces
-    public Vector2[] UVs;           // Position of a vertex in a 2D texture
+    public Vector3[] Vertices;
+    public int[] Triangles;         
+    public Vector2[] UVs;           // Position of vertex on a 2D texture
 
-    int triangleIndex;
-
-    // Constructs meshdata using a heightmap
-    public static MeshData MeshData(float[,] heightMap, float heightMultiplier)
+    public MeshData(float[,] vals)
     {
-        int numCols = heightMap.GetLength(0);
-        int numRows = heightMap.GetLength(1);
+        int numCols = vals.GetLength(0);
+        int numRows = vals.GetLength(1);
 
-        // Calculates size of arrays
-        numVertices = numCols * numRows;
-        numTriangles = (numCols - 1) * (numRows - 1) * 2;
+        int numVertices = numCols * numRows;
+        int numTriangles = (numCols - 1) * (numRows - 1) * 2;
 
         Vertices = new Vector3[numVertices];
         Triangles = new int[numTriangles * 3];
@@ -27,35 +23,45 @@ public class MeshData
         float topX = (numCols - 1) / -2f;
         float topY = (numRows - 1) / 2f;
 
-        int i = 0;
+        int iVertex = 0;
+        int iTriangle = 0;
+
         for (int y = 0; y < numRows; y++)
         {
-            for (int x = 0; x < numCols; x++)
+            for (int x = 0; x < numCols; x++)       // Sets vertices in rows
             {
-                // Sets position and height of each vertex
-                meshData.vertices[i] = new Vector3(topX + x, topY + y, heightMap[x, y] * heightMultiplier);     // Position of each vertex in 3D space
-                meshData.uvs[i] = new Vector2(x / (float)numCols, y / (float)numRows);                          // Position of each vertex in a 2D texture
+                Vertices[iVertex] = new Vector3(topX + x, topY + y, vals[x, y]);                        // Position of each vertex in 3D space
+                UVs[iVertex] = new Vector2(x / (float)numCols, y / (float)numRows);                          // Position of each vertex in a 2D texture
 
                 // Adds two triangles for each box in the grid
                 if (x < numCols - 1 && y < numRows - 1)
                 {
-                    meshData.AddTriangle(i, i + numCols + 1, vertexIndex + verticesPerLine);
-                    meshData.AddTriangle(vertexIndex + verticesPerLine + 1, vertexIndex, vertexIndex + 1);
+                    AddTriangle(iVertex, iVertex + 1, iVertex + numCols + 1);
+                    AddTriangle(iVertex, iVertex + numCols + 1, iVertex + numCols);
                 }
 
-                i++;
+                iVertex++;
             }
         }
 
-        return meshData;
+        // Sets a triangle given its vertices
+        void AddTriangle(int v1, int v2, int v3)
+        {
+            Triangles[iTriangle] = v1;
+            Triangles[iTriangle + 1] = v2;
+            Triangles[iTriangle + 2] = v3;
+            iTriangle += 3;
+        }
+
     }
 
+    // Returns a mesh from the meshdata
     public Mesh CreateMesh()
     {
         Mesh mesh = new Mesh();
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.uv = uvs;
+        mesh.vertices = Vertices;
+        mesh.triangles = Triangles;
+        mesh.uv = UVs;
         mesh.RecalculateNormals();
         return mesh;
     }

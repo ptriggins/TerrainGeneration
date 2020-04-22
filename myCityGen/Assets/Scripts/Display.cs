@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class Display : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Renderer TextureRenderer;
+    public MeshFilter MeshFilter;
+    public MeshRenderer MeshRenderer;
+
+    public void DrawTexture(Texture2D texture)
     {
-        
+        Debug.Log("test");
+        TextureRenderer.sharedMaterial.mainTexture = texture;
+        TextureRenderer.transform.localScale = new Vector3(texture.width, 1, texture.height);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void DrawMesh(MeshData meshData, Texture2D texture)
     {
-        
+        MeshFilter.sharedMesh = meshData.CreateMesh();
+        MeshRenderer.sharedMaterial.mainTexture = texture;
     }
+
 }

@@ -293,6 +293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 964032408}
   - component: {fileID: 964032407}
+  - component: {fileID: 964032409}
   m_Layer: 0
   m_Name: Generator
   m_TagString: Untagged
@@ -316,6 +317,7 @@ MonoBehaviour:
   Height: 512
   Octaves: 6
   Frequency: 1.25
+  Mode: 0
   DensityTypes:
   - Name: Wilderness
     Percentile: 0.2
@@ -329,7 +331,6 @@ MonoBehaviour:
   - Name: Urban
     Percentile: 0.8
     Color: {r: 0.8679245, g: 0.67605305, b: 0.2251691, a: 0}
-  DensityRenderer: {fileID: 0}
 --- !u!4 &964032408
 Transform:
   m_ObjectHideFlags: 0
@@ -345,3 +346,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &964032409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964032406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3f8db0e8b74c9740885162141fa6bb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TextureRenderer: {fileID: 0}
+  MeshFilter: {fileID: 0}
+  MeshRenderer: {fileID: 0}
