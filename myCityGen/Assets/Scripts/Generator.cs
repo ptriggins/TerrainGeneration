@@ -25,6 +25,7 @@ public class Generator : MonoBehaviour
     [SerializeField]
     public double Frequency = 1.25;      // Interval between samples
 
+    [Header("Density Definitions")]
     public DensityType[] DensityTypes;
 
     // Store noise samples
@@ -37,6 +38,8 @@ public class Generator : MonoBehaviour
 
     // Displays map texture
     public MeshRenderer DensityRenderer;
+
+    public AnimationCurve heightCurve;
 
     // First execution
     void Start()
@@ -80,7 +83,7 @@ public class Generator : MonoBehaviour
         SetBitmasks();
         ZoneMap();
 
-        DensityRenderer.materials[0].mainTexture = DensityTextureGenerator.GetDensityTexture(Width, Height, Tiles);
+        DensityRenderer.materials[0].mainTexture = TextureGenerator.GetDensityTexture(Width, Height, Tiles);
     }
 
     private void GetData(ImplicitModuleBase module, ref MapData mapData)
@@ -129,7 +132,6 @@ public class Generator : MonoBehaviour
 
                 Tile tile = new Tile(x, y, density, densityType);
                 Tiles[x, y] = tile;
-                Debug.Log(Tiles[x, y].DensityType.Name);
             }
         }
     }

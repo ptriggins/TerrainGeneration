@@ -2,13 +2,13 @@
 // Stores data sampled from a noise map
 public class MapData
 {
-    public float[,] Data;
+    public float[,] HeightMap;
     public float Min { get; set; }
     public float Max { get; set; }
 
     public MapData(int width, int height)
     {
-        Data = new float[width, height];
+        HeightMap = new float[width, height];
         Min = float.MaxValue;
         Max = float.MinValue;
     }
