@@ -20,6 +20,4 @@ public static class DensityTextureGenerator
         texture.Apply();
         return texture;
     }
-
-
 }

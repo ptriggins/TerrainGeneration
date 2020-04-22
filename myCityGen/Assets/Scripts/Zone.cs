@@ -20,6 +20,9 @@ public class Zone
             Tile tile = stack.Pop();
             Tiles.Add(tile);
 
+
+            Debug.Log(tile.RightNeighbor.DensityType.Name);
+            /*
             if (InZone(tile.TopNeighbor))
                 stack.Push(tile.TopNeighbor);
             if (InZone(tile.BottomNeighbor))
@@ -28,13 +31,14 @@ public class Zone
                 stack.Push(tile.LeftNeighbor);
             if (InZone(tile.RightNeighbor))
                 stack.Push(tile.RightNeighbor);
+            */
         }
 
     }
 
     private bool InZone(Tile neighbor)
     {
-        if (neighbor != null && !neighbor.Zoned && neighbor.DensityType == DensityType)
+        if (neighbor != null && !neighbor.Zoned && neighbor.DensityType.Name == DensityType.Name)
             return true;
         return false;
     }

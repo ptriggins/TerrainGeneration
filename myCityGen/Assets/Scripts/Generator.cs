@@ -6,14 +6,14 @@ using AccidentalNoise;
 public struct DensityType
 {
     public string Name;
-    public float Max;
+    public float Percentile;
     public Color Color;
 }
 
-public abstract class Generator : MonoBehaviour
+public class Generator : MonoBehaviour
 {
 
-    protected int Seed;
+    private int Seed;
 
     [Header("Map Size")]
     [SerializeField]
@@ -33,15 +33,12 @@ public abstract class Generator : MonoBehaviour
     ImplicitFractal HeightMap;
     MapData DensityData;
 
-    protected Tile[,] Tiles;
+    public Tile[,] Tiles;
 
-    protected List<Zone> Cities = new List<Zone>();
-    protected List<Zone> Suburbs = new List<Zone>();
-    protected List<Zone> Farms = new List<Zone>();
-    protected List<Zone> Forests = new List<Zone>();
+    List<Zone>[] Zones;
 
     // Displays map texture
-    protected MeshRenderer DensityRenderer;
+    public MeshRenderer DensityRenderer;
 
     // Called on script's first execution
     void Start()
@@ -58,7 +55,7 @@ public abstract class Generator : MonoBehaviour
                                        InterpolationType.QUINTIC,
                                        Octaves,
                                        Frequency,
-                                       UnityEngine.Random.Range(0, int.MaxValue));
+                                       Random.Range(0, int.MaxValue));
     }
 
     // Press F5 to refresh after adjusting inspector values
@@ -66,7 +63,7 @@ public abstract class Generator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F5))
         {
-            Seed = UnityEngine.Random.Range(0, int.MaxValue);
+            Seed = Random.Range(0, int.MaxValue);
             Initialize();
             Generate();
         }
@@ -74,7 +71,7 @@ public abstract class Generator : MonoBehaviour
 
     protected virtual void Instantiate()
     {
-        Seed = UnityEngine.Random.Range(0, int.MaxValue);
+        Seed = Random.Range(0, int.MaxValue);
         DensityRenderer = transform.Find("DensityTexture").GetComponent<MeshRenderer>();
         Initialize();
     }
@@ -127,7 +124,7 @@ public abstract class Generator : MonoBehaviour
                 DensityType densityType = DensityTypes[0];
                 for (int i = 0; i < DensityTypes.Length; i++)
                 {
-                    if (density < DensityTypes[i].Max)
+                    if (density < DensityData.Max * DensityTypes[i].Percentile)
                     {
                         densityType = DensityTypes[i];
                     }
@@ -146,14 +143,14 @@ public abstract class Generator : MonoBehaviour
             for (var y = 0; y < Height; y++)
             {
                 Tile tile = Tiles[x, y];
-
-                if (Tiles[x, y - 1] != null)
-                    tile.TopNeighbor = Tiles[x, y - 1];
-                if (Tiles[x, y + 1] != null)
+                
+                if (y != 0)
+                   tile.TopNeighbor = Tiles[x, y - 1];
+                if (y != Height - 1)
                     tile.BottomNeighbor = Tiles[x, y + 1];
-                if (Tiles[x - 1, y] != null)
-                    tile.LeftNeighbor = Tiles[x, y - 1];
-                if (Tiles[x + 1, y] != null)
+                if (x != 0)
+                    tile.LeftNeighbor = Tiles[x - 1, y];
+                if (x != Width - 1)
                     tile.RightNeighbor = Tiles[x + 1, y];
             }
         }
@@ -172,6 +169,22 @@ public abstract class Generator : MonoBehaviour
 
     private void ZoneMap()
     {
+        Zones = new List<Zone>[DensityTypes.Length];
+        for (int i = 0; i < DensityTypes.Length; i++)
+        {
+            Zones[i] = new List<Zone>();
+        }
+
+        Tile tile = Tiles[0, 0];
+        Zone zone = new Zone(tile);
+
+        for (int i = 0; i < DensityTypes.Length; i++)
+        {
+            if (zone.DensityType.Name == DensityTypes[i].Name)
+                Zones[i].Add(zone);
+        }
+
+        /*
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
@@ -182,17 +195,15 @@ public abstract class Generator : MonoBehaviour
                 if (tile.Zoned) continue;
                 Zone zone = new Zone(tile);
 
-                if (zone.DensityType == DensityType.Urban)
-                    Cities.Add(zone);
-                else if (zone.DensityType == DensityType.Suburban)
-                    Suburbs.Add(zone);
-                else if (zone.DensityType == DensityType.Rural)
-                    Farms.Add(zone);
-                else
-                    Forests.Add(zone);
+                for (int i = 0; i < DensityTypes.Length; i++)
+                {
+                    if (zone.DensityType.Name == DensityTypes[i].Name)
+                        Zones[i].Add(zone);
+                }
 
             }
         }
+        */
     }
 
 }

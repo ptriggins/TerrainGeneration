@@ -27,13 +27,13 @@ public class Tile
     {
         int count = 0;
 
-        if (TopNeighbor != null && TopNeighbor.DensityType == DensityType)
+        if (TopNeighbor != null && TopNeighbor.DensityType.Name == DensityType.Name)
             count += 1;
-        if (BottomNeighbor != null && BottomNeighbor.DensityType == DensityType)
+        if (BottomNeighbor != null && BottomNeighbor.DensityType.Name == DensityType.Name)
             count += 4;
-        if (LeftNeighbor != null && LeftNeighbor.DensityType == DensityType)
+        if (LeftNeighbor != null && LeftNeighbor.DensityType.Name == DensityType.Name)
             count += 8;
-        if (RightNeighbor != null && RightNeighbor.DensityType == DensityType)
+        if (RightNeighbor != null && RightNeighbor.DensityType.Name == DensityType.Name)
             count += 2;
 
         Bitmask = count;
