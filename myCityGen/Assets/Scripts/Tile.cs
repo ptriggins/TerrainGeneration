@@ -11,11 +11,13 @@ public class Tile
     public Color Color;
     public bool Zoned;
 
-    public Tile(int x, int y, float density, DensityType DensityType)
+    public Tile(int x, int y, float density, DensityType densityType)
     {
         X = x;
         Y = y;
         Density = density;
+        DensityType = densityType;
+
         TopNeighbor = null;
         BottomNeighbor = null;
         LeftNeighbor = null;

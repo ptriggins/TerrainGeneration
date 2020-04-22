@@ -21,7 +21,7 @@ public class Zone
             Tiles.Add(tile);
 
 
-            Debug.Log(tile.RightNeighbor.DensityType.Name);
+           // Debug.Log(tile.RightNeighbor.DensityType.Name);
             /*
             if (InZone(tile.TopNeighbor))
                 stack.Push(tile.TopNeighbor);

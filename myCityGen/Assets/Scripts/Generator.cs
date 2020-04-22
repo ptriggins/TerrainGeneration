@@ -13,8 +13,6 @@ public struct DensityType
 public class Generator : MonoBehaviour
 {
 
-    private int Seed;
-
     [Header("Map Size")]
     [SerializeField]
     public int Width = 512;
@@ -29,7 +27,7 @@ public class Generator : MonoBehaviour
 
     public DensityType[] DensityTypes;
 
-    // Store nosie samples
+    // Store noise samples
     ImplicitFractal HeightMap;
     MapData DensityData;
 
@@ -40,7 +38,7 @@ public class Generator : MonoBehaviour
     // Displays map texture
     public MeshRenderer DensityRenderer;
 
-    // Called on script's first execution
+    // First execution
     void Start()
     {
         Instantiate();
@@ -63,7 +61,6 @@ public class Generator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F5))
         {
-            Seed = Random.Range(0, int.MaxValue);
             Initialize();
             Generate();
         }
@@ -71,7 +68,6 @@ public class Generator : MonoBehaviour
 
     protected virtual void Instantiate()
     {
-        Seed = Random.Range(0, int.MaxValue);
         DensityRenderer = transform.Find("DensityTexture").GetComponent<MeshRenderer>();
         Initialize();
     }
@@ -119,19 +115,21 @@ public class Generator : MonoBehaviour
             for (var y = 0; y < Height; y++)
             {
                 float density = DensityData.Data[x, y];
-                density = (density - DensityData.Min) / (DensityData.Max - DensityData.Min);
+                density = (density - DensityData.Min) / (DensityData.Max - DensityData.Min);            // Density as percentage of total range
 
                 DensityType densityType = DensityTypes[0];
                 for (int i = 0; i < DensityTypes.Length; i++)
                 {
-                    if (density < DensityData.Max * DensityTypes[i].Percentile)
+                    if (density < DensityTypes[i].Percentile)
                     {
                         densityType = DensityTypes[i];
+                        break;
                     }
                 }
 
                 Tile tile = new Tile(x, y, density, densityType);
                 Tiles[x, y] = tile;
+                Debug.Log(Tiles[x, y].DensityType.Name);
             }
         }
     }
