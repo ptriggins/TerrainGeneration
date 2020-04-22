@@ -10,7 +10,6 @@ public class Display : MonoBehaviour
 
     public void DrawTexture(Texture2D texture)
     {
-        Debug.Log("test");
         TextureRenderer.sharedMaterial.mainTexture = texture;
         TextureRenderer.transform.localScale = new Vector3(texture.width, 1, texture.height);
     }

@@ -66,7 +66,7 @@ public class Generator : MonoBehaviour
             for (var y = 0; y < Height; y++)
             {
                 float density = DensityMap.Values[x, y];
-                density = (density - DensityMap.Min) / (DensityMap.Max - DensityMap.Min);            // Density as percentage of total range
+                density = (density - DensityMap.Min) / (DensityMap.Max - DensityMap.Min);            // Density as percentage of noise range
 
                 DensityType densityType = DensityTypes[0];
                 for (int i = 0; i < DensityTypes.Length; i++)
@@ -77,7 +77,6 @@ public class Generator : MonoBehaviour
                         break;
                     }
                 }
-                Debug.Log(densityType.Name);
 
                 Tile tile = new Tile(x, y, density, densityType);
                 Tiles[x, y] = tile;
@@ -159,7 +158,6 @@ public class Generator : MonoBehaviour
     {
         Display display = FindObjectOfType<Display>();
         Texture2D DensityTexture = TextureGenerator.GetDensityTexture(Width, Height, Tiles);
-        Debug.Log("Test");
 
         if (Mode == DrawMode.Texture)
         {
