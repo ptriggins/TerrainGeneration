@@ -15,9 +15,9 @@ public class Generator : MonoBehaviour
 
     [Header("Map Size")]
     [SerializeField]
-    public int Width = 512;
+    public int Width = 512;     // Size in x
     [SerializeField]
-    public int Height = 512;
+    public int Length = 512;    // Size in z
 
     [Header("Noise")]
     [SerializeField]
@@ -38,7 +38,6 @@ public class Generator : MonoBehaviour
     private ImplicitFractal HeightMap;
     private MapData DensityMap;
 
-    // Store density data
     private Tile[,] Tiles;
     private List<Zone>[] Zones;
 
@@ -48,7 +47,7 @@ public class Generator : MonoBehaviour
     {
         HeightMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC, 
             Octaves, Frequency, Random.Range(0, int.MaxValue));
-        DensityMap = new MapData(Width, Height, HeightMap);
+        DensityMap = new MapData(Width, Length, HeightMap);
 
         LoadTiles();
         SetNeighbors();
@@ -59,16 +58,16 @@ public class Generator : MonoBehaviour
 
     private void LoadTiles()
     {
-        Tiles = new Tile[Width, Height];
+        Tiles = new Tile[Width, Length];
 
         for (var x = 0; x < Width; x++)
         {
-            for (var y = 0; y < Height; y++)
+            for (var y = 0; y < Length; y++)
             {
                 float density = DensityMap.Values[x, y];
                 density = (density - DensityMap.Min) / (DensityMap.Max - DensityMap.Min);            // Density as percentage of noise range
 
-                DensityType densityType = DensityTypes[0];
+                DensityType densityType = DensityTypes[DensityTypes.Length - 1];
                 for (int i = 0; i < DensityTypes.Length; i++)
                 {
                     if (density < DensityTypes[i].Percentile)
@@ -88,13 +87,13 @@ public class Generator : MonoBehaviour
     {
         for (var x = 0; x < Width; x++)
         {
-            for (var y = 0; y < Height; y++)
+            for (var y = 0; y < Length; y++)
             {
                 Tile tile = Tiles[x, y];
                 
                 if (y != 0)
                    tile.TopNeighbor = Tiles[x, y - 1];
-                if (y != Height - 1)
+                if (y != Length - 1)
                     tile.BottomNeighbor = Tiles[x, y + 1];
                 if (x != 0)
                     tile.LeftNeighbor = Tiles[x - 1, y];
@@ -104,11 +103,12 @@ public class Generator : MonoBehaviour
         }
     }
 
+    // Darkens edge tiles
     private void SetBitmasks()
     {
         for (var x = 0; x < Width; x++)
         {
-            for (var y = 0; y < Height; y++)
+            for (var y = 0; y < Length; y++)
             {
                 Tiles[x, y].SetBitmask();
             }
@@ -123,19 +123,9 @@ public class Generator : MonoBehaviour
             Zones[i] = new List<Zone>();
         }
 
-        Tile tile = Tiles[0, 0];
-        Zone zone = new Zone(tile);
-
-        for (int i = 0; i < DensityTypes.Length; i++)
-        {
-            if (zone.DensityType.Name == DensityTypes[i].Name)
-                Zones[i].Add(zone);
-        }
-
-        /*
         for (int x = 0; x < Width; x++)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < Length; y++)
             {
 
                 // Constructs new zone from first available unzoned tile
@@ -151,13 +141,12 @@ public class Generator : MonoBehaviour
 
             }
         }
-        */
     }
 
     private void Draw()
     {
         Display display = FindObjectOfType<Display>();
-        Texture2D DensityTexture = TextureGenerator.GetDensityTexture(Width, Height, Tiles);
+        Texture2D DensityTexture = TextureGenerator.GetDensityTexture(Width, Length, Tiles);
 
         if (Mode == DrawMode.Texture)
         {
@@ -165,7 +154,7 @@ public class Generator : MonoBehaviour
         }
         else if (Mode == DrawMode.Mesh)
         {
-            display.DrawMesh(new MeshData(DensityMap.Values), DensityTexture);
+            display.DrawMesh(new MeshData(Width, Length), DensityTexture);
         }
     }
 

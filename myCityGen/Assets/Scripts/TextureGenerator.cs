@@ -11,7 +11,7 @@ public static class TextureGenerator
         {
             for (var y = 0; y < height; y++)
             {
-                pixels[x + y * width] = tiles[x, y].DensityType.Color;
+                pixels[x + y * width] = tiles[x, y].Color;
             }
         }
 
