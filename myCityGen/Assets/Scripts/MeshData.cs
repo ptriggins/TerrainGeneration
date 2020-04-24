@@ -4,68 +4,63 @@ using UnityEngine;
 
 public class MeshData
 {
+    public int Width, Length;
     public Vector3[] Vertices;      // Points
     public int[] Triangles;         // Surfaces
-    public int Width, Length;
+    public Vector2[] UVs;
 
     public MeshData(int width, int length)
     {
-        Width = width; Length = length;
-
-        Vertices = new Vector3[Width * Length];
-
-        int numTriangles = (Width - 1) * (Length - 1) * 2;
-        Triangles = new int[numTriangles * 3];
-
+        Width = 100; Length = 100;
         AddVertices();
+        AddTriangles();
     }
 
     private void AddVertices()
     {
+        Vertices = new Vector3[Width * Length];
+        UVs = new Vector2[Width * Length];
+
         float topX = (Width - 1) / -2f;
         float topZ = (Length - 1) / 2f;
 
-        int iV = 0, iT = 0;
-        for (int z = 0; z < Length; z++)    // Cols
+        int i = 0;
+        for (int z = 0; z < Length; z++)
         {
-            for (int x = 0; x < Width; x++)     // Rows
+            for (int x = 0; x < Width; x++)
             {
-
-                Vertices[iV] = new Vector3(topX + x, 0, topZ - z);                        
-    
-                if (x < Width - 1 && z < Length - 1)
-                {
-                    AddTriangles(iV, ref iT);
-                }
-
-                iV++;
+                Vertices[i] = new Vector3(topX + x, 0, topZ - z);
+                UVs[i] = new Vector2(x / (float)Width, z / (float)Length);
+                i++;
             }
         }
-
     }
 
-    private void AddTriangles(int v, ref int t)
+    private void AddTriangles()
     {
+        Triangles = new int[(Width - 1) * (Length - 1) * 6];
 
-        // Upper Triangle
-        Triangles[t] = v;
-        Triangles[t + 1] = v + 1;
-        Triangles[t + 2] = v + Width + 1;
-
-        // Lower Triangle
-        Triangles[t + 3] = v;
-        Triangles[t + 4] = v + Width + 1;
-        Triangles[t + 5] = v + Width;
-
-        t += 6;
-
+        int i = 0, t = 0;
+        for (int z = 0; z < Length; z++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                if (z < Length - 1 && x < Width - 1)
+                {
+                    AddTriangle(t, i, i + 1, i + Width + 1);            // Top triangle
+                    AddTriangle(t + 3, i, i + Width + 1, i + Width);    // Bottom triangle
+                    t += 6;
+                }
+                i++;
+            }
+        }
     }
 
-    public Mesh CreateMesh()
+    private void AddTriangle(int t, int a, int b, int c)
     {
-        Mesh mesh = new Mesh();
-        mesh.vertices = Vertices;
-        mesh.triangles = Triangles;
-        return mesh;
+        Triangles[t] = a;
+        Triangles[t + 1] = b;
+        Triangles[t + 2] = c;
     }
+
 }

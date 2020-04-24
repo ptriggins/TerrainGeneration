@@ -41,6 +41,10 @@ public class Generator : MonoBehaviour
     private Tile[,] Tiles;
     private List<Zone>[] Zones;
 
+    public Renderer TextureRenderer;
+    public MeshFilter MeshFilter;
+    public MeshRenderer MeshRenderer;
+
     //public AnimationCurve heightCurve;
 
     public void Generate()
@@ -53,7 +57,7 @@ public class Generator : MonoBehaviour
         SetNeighbors();
         SetBitmasks();
         ZoneMap();
-        Draw(); 
+        Draw();
     }
 
     private void LoadTiles()
@@ -145,17 +149,27 @@ public class Generator : MonoBehaviour
 
     private void Draw()
     {
-        Display display = FindObjectOfType<Display>();
+        MeshData meshData = new MeshData(Width, Length);
         Texture2D DensityTexture = TextureGenerator.GetDensityTexture(Width, Length, Tiles);
 
         if (Mode == DrawMode.Texture)
         {
-            display.DrawTexture(DensityTexture);
+            TextureRenderer.sharedMaterial.mainTexture = DensityTexture;
+            TextureRenderer.transform.localScale = new Vector3(DensityTexture.width, 1, DensityTexture.height);
         }
         else if (Mode == DrawMode.Mesh)
         {
-            display.DrawMesh(new MeshData(Width, Length), DensityTexture);
+            Mesh mesh = MeshFilter.sharedMesh;
+            mesh.Clear();
+            mesh.vertices = meshData.Vertices;
+            mesh.triangles = meshData.Triangles;
+            mesh.uv = meshData.UVs;
+            mesh.RecalculateNormals();
+            MeshFilter.mesh = mesh;
+
+            MeshRenderer.sharedMaterial.mainTexture = DensityTexture;
         }
+        
     }
 
 }

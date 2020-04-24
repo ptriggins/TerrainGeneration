@@ -96,7 +96,6 @@
      <Compile Include="Assets\Scripts\AccidentalNoise\MappingRanges.cs" />
      <Compile Include="Assets\Scripts\AccidentalNoise\Noise.cs" />
      <Compile Include="Assets\Scripts\AccidentalNoise\NoiseLookupTable.cs" />
-     <Compile Include="Assets\Scripts\Display.cs" />
      <Compile Include="Assets\Scripts\Generator.cs" />
      <Compile Include="Assets\Scripts\MapData.cs" />
      <Compile Include="Assets\Scripts\MathHelper.cs" />
