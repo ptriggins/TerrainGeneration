@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Display : MonoBehaviour
 {
-    public MeshFilter MeshFilter;
-    public MeshRenderer MeshRenderer;
-    public Mesh Mesh;
+    private MeshFilter MeshFilter;
+    private MeshRenderer MeshRenderer;
+    private Mesh Mesh;
 
-    public Display()
+    void Awake()
     {
         MeshFilter = gameObject.AddComponent<MeshFilter>();
         MeshRenderer = gameObject.AddComponent<MeshRenderer>();

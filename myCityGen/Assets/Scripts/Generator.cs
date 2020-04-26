@@ -41,48 +41,48 @@ public class Generator : MonoBehaviour
     private Tile[,] Tiles;
     private List<Zone>[] Zones;
 
-    private Display display;
-
-    public bool Initialized;
+    private Display Display;
 
     //public AnimationCurve heightCurve;
 
-    public void Initialize()
+    void Start()
     {
-        NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
-            Octaves, Frequency, Random.Range(0, int.MaxValue));
-
-        MapData = new MapData(Width, Length);
-        MeshData = new MeshData(Width, Length);
+        Display = (Display)FindObjectOfType(typeof(Display));
     }
 
     void Instantiate()
     {
-        display = GameObject.Find("Display");
+        Tiles = new Tile[Width, Length];
+    }
+
+    void Initialize()
+    {
+
     }
 
     public void Generate()
     {
 
-        DensityMap = new MapData(Width, Length, HeightMap);
+        NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
+            Octaves, Frequency, Random.Range(0, int.MaxValue));
+        MapData = new MapData(Width, Length);
+        MeshData = new MeshData(Width, Length);
 
-        LoadTiles();
+        SetTiles();
         SetNeighbors();
         SetBitmasks();
         ZoneMap();
 
     }
 
-    private void LoadTiles()
+    private void SetTiles()
     {
-        Tiles = new Tile[Width, Length];
-
         for (var x = 0; x < Width; x++)
         {
             for (var y = 0; y < Length; y++)
             {
                 float density = MapData.Values[x, y];
-                density = (density - MapData.Min) / (MapData.Max - Map.Min);            // Density as percentage of noise range
+                density = (density - MapData.Min) / (MapData.Max - MapData.Min);            // Density as percentage of noise range
 
                 DensityType densityType = DensityTypes[DensityTypes.Length - 1];
                 for (int i = 0; i < DensityTypes.Length; i++)
