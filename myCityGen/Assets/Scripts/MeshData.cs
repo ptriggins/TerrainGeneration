@@ -28,9 +28,9 @@ public class MeshData
         int QuadNum = 0;
         Vector3 startPos = new Vector3((Width - 1) / -2f, 0, (Length - 1) / 2f);
 
-        for (int z = 0; z < Length; z++)
+        for (int z = 0; z < Length - 1; z++)
         {
-            for (int x = 0; x < Width; x++)
+            for (int x = 0; x < Width - 1; x++)
             {
                 Vertices.Add(startPos + new Vector3(x, 0, -z));
                 UVs.Add(new Vector2(x / (float)Width, z / (float)Length));

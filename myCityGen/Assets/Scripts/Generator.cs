@@ -32,14 +32,13 @@ public class Generator : MonoBehaviour
 
     [Header("Density Definitions")]
     [SerializeField]
-    public DensityType[] DensityTypes;
+    public List<DensityType> DensityTypes;
 
     private ImplicitFractal NoiseMap;
-    private MapData MapData;
+    private mapdata MapData;
     private MeshData MeshData;
 
-    private Tile[,] Tiles;
-    private List<Zone>[] Zones;
+    public DensityMap DensityMap;
 
     private Display Display;
 
@@ -65,7 +64,7 @@ public class Generator : MonoBehaviour
 
         NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
             Octaves, Frequency, Random.Range(0, int.MaxValue));
-        MapData = new MapData(Width, Length);
+        MapData = new mapdata(Width, Length);
         MeshData = new MeshData(Width, Length);
 
         SetTiles();
@@ -73,63 +72,6 @@ public class Generator : MonoBehaviour
         SetBitmasks();
         ZoneMap();
 
-    }
-
-    private void SetTiles()
-    {
-        for (var x = 0; x < Width; x++)
-        {
-            for (var y = 0; y < Length; y++)
-            {
-                float density = MapData.Values[x, y];
-                density = (density - MapData.Min) / (MapData.Max - MapData.Min);            // Density as percentage of noise range
-
-                DensityType densityType = DensityTypes[DensityTypes.Length - 1];
-                for (int i = 0; i < DensityTypes.Length; i++)
-                {
-                    if (density < DensityTypes[i].Percentile)
-                    {
-                        densityType = DensityTypes[i];
-                        break;
-                    }
-                }
-
-                Tile tile = new Tile(x, y, density, densityType);
-                Tiles[x, y] = tile;
-            }
-        }
-    }
-
-    private void SetNeighbors()
-    {
-        for (var x = 0; x < Width; x++)
-        {
-            for (var y = 0; y < Length; y++)
-            {
-                Tile tile = Tiles[x, y];
-                
-                if (y != 0)
-                   tile.TopNeighbor = Tiles[x, y - 1];
-                if (y != Length - 1)
-                    tile.BottomNeighbor = Tiles[x, y + 1];
-                if (x != 0)
-                    tile.LeftNeighbor = Tiles[x - 1, y];
-                if (x != Width - 1)
-                    tile.RightNeighbor = Tiles[x + 1, y];
-            }
-        }
-    }
-
-    // Darkens edge tiles
-    private void SetBitmasks()
-    {
-        for (var x = 0; x < Width; x++)
-        {
-            for (var y = 0; y < Length; y++)
-            {
-                Tiles[x, y].SetBitmask();
-            }
-        }
     }
 
     private void ZoneMap()

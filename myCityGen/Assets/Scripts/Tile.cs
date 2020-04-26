@@ -2,32 +2,46 @@
 
 public class Tile
 {
-    public int X, Y;
-    public float Density { get; set; }
-    public DensityType DensityType;
-    public Color Color;
+    public enum Direction
+    {
+        Top, Bottom, Left, Right
+    }
 
-    public Tile TopNeighbor, BottomNeighbor, LeftNeighbor, RightNeighbor;
+    public DensityType Type;
+    public Color Color;
+    public Tile[] Neighbors;
+
     public int Bitmask;
     public bool Zoned;
 
-    public Tile(int x, int y, float density, DensityType densityType)
+    public Tile(DensityType densityType)
     {
-        X = x;
-        Y = y;
-        Density = density;
         DensityType = densityType;
         Color = densityType.Color;
 
-        TopNeighbor = null;
-        BottomNeighbor = null;
-        LeftNeighbor = null;
-        RightNeighbor = null;
+        Neighbors = new Tile[4];
+        for (int i = 0; i <  4; i++)
+        {
+            Neighbors[i] = null;
+        }
     }
 
-    // Darkens edge tiles
-    public void SetBitmask()
+    public SetValue()
+
+    public Color GetColor()
     {
+        for (int i = 0; i < 4; i++)
+        {
+            if (!CheckNeighbor(i))
+                return Color.black;
+        }
+        return DensityType.Color;
+
+        
+
+        
+        else if (Top.DensityType.Name != DensityType.Name || Bottom.DensityType.Name != DensityType.Name)
+
         int count = 0;
         if (TopNeighbor != null && TopNeighbor.DensityType.Name == DensityType.Name)
             count += 1;
@@ -41,5 +55,15 @@ public class Tile
         if (count < 15)
             Color = Color.black;
         Bitmask = count;
+    }
+
+    public bool CheckNeighbor(int direction)
+    {
+        if (Neighbors[direction] == null)
+            return false;
+        else if (Neighbors[direction].DensityType.Name != DensityType.Name)
+            return false;
+        else
+            return true;
     }
 }
