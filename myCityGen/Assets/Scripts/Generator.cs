@@ -34,30 +34,43 @@ public class Generator : MonoBehaviour
     [SerializeField]
     public DensityType[] DensityTypes;
 
-    // Noise sampling
-    private ImplicitFractal HeightMap;
-    private MapData DensityMap;
+    private ImplicitFractal NoiseMap;
+    private MapData MapData;
+    private MeshData MeshData;
 
     private Tile[,] Tiles;
     private List<Zone>[] Zones;
 
-    public Renderer TextureRenderer;
-    public MeshFilter MeshFilter;
-    public MeshRenderer MeshRenderer;
+    private Display display;
+
+    public bool Initialized;
 
     //public AnimationCurve heightCurve;
 
+    public void Initialize()
+    {
+        NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
+            Octaves, Frequency, Random.Range(0, int.MaxValue));
+
+        MapData = new MapData(Width, Length);
+        MeshData = new MeshData(Width, Length);
+    }
+
+    void Instantiate()
+    {
+        display = GameObject.Find("Display");
+    }
+
     public void Generate()
     {
-        HeightMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC, 
-            Octaves, Frequency, Random.Range(0, int.MaxValue));
+
         DensityMap = new MapData(Width, Length, HeightMap);
 
         LoadTiles();
         SetNeighbors();
         SetBitmasks();
         ZoneMap();
-        Draw();
+
     }
 
     private void LoadTiles()
@@ -68,8 +81,8 @@ public class Generator : MonoBehaviour
         {
             for (var y = 0; y < Length; y++)
             {
-                float density = DensityMap.Values[x, y];
-                density = (density - DensityMap.Min) / (DensityMap.Max - DensityMap.Min);            // Density as percentage of noise range
+                float density = MapData.Values[x, y];
+                density = (density - MapData.Min) / (MapData.Max - Map.Min);            // Density as percentage of noise range
 
                 DensityType densityType = DensityTypes[DensityTypes.Length - 1];
                 for (int i = 0; i < DensityTypes.Length; i++)
@@ -145,31 +158,6 @@ public class Generator : MonoBehaviour
 
             }
         }
-    }
-
-    private void Draw()
-    {
-        MeshData meshData = new MeshData(Width, Length);
-        Texture2D DensityTexture = TextureGenerator.GetDensityTexture(Width, Length, Tiles);
-
-        if (Mode == DrawMode.Texture)
-        {
-            TextureRenderer.sharedMaterial.mainTexture = DensityTexture;
-            TextureRenderer.transform.localScale = new Vector3(DensityTexture.width, 1, DensityTexture.height);
-        }
-        else if (Mode == DrawMode.Mesh)
-        {
-            Mesh mesh = MeshFilter.sharedMesh;
-            mesh.Clear();
-            mesh.vertices = meshData.Vertices;
-            mesh.triangles = meshData.Triangles;
-            mesh.uv = meshData.UVs;
-            mesh.RecalculateNormals();
-            MeshFilter.mesh = mesh;
-
-            MeshRenderer.sharedMaterial.mainTexture = DensityTexture;
-        }
-        
     }
 
 }

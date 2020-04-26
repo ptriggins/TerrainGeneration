@@ -11,9 +11,20 @@ public class MapGenerator : Editor
 
         DrawDefaultInspector();
 
-        if (GUILayout.Button("Generate"))
+        if (generator.Initialized)
         {
-            generator.Generate();
+            if (GUILayout.Button("Generate"))
+            {
+                generator.Generate();
+            }
         }
+        else
+        {
+            if (GUILayout.Button("Initialize"))
+            {
+                generator.Initialize();
+            }
+        }
+
     }
 }
