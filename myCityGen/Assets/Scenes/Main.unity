@@ -312,7 +312,7 @@ MonoBehaviour:
   Length: 1024
   Octaves: 20
   Frequency: 1
-  Mode: 1
+  Mode: 0
   DensityTypes:
   - Name: Wilderness
     Percentile: 0.2

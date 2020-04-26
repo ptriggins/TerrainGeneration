@@ -11,7 +11,7 @@ public class MeshData
 
     public MeshData(int width, int length)
     {
-        Width = 100; Length = 100;
+        Width = 500; Length = 500;
         AddVertices();
         AddTriangles();
     }
@@ -41,7 +41,7 @@ public class MeshData
         Triangles = new int[(Width - 1) * (Length - 1) * 6];
 
         int i = 0, t = 0;
-        for (int z = 0; z < Length; z++)
+        for (int z = 0;  z < Length; z++)
         {
             for (int x = 0; x < Width; x++)
             {
@@ -51,6 +51,7 @@ public class MeshData
                     AddTriangle(t + 3, i, i + Width + 1, i + Width);    // Bottom triangle
                     t += 6;
                 }
+                Debug.Log(i);
                 i++;
             }
         }
@@ -61,6 +62,7 @@ public class MeshData
         Triangles[t] = a;
         Triangles[t + 1] = b;
         Triangles[t + 2] = c;
+        Debug.Log(Vertices[a] + ": " + Vertices[Triangles[t]] + ", " + Vertices[Triangles[t + 1]] + ", " + Vertices[Triangles[t + 2]]);
     }
 
 }
