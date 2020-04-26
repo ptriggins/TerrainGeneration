@@ -3,42 +3,43 @@ using System.Collections.Generic;
 
 public class Zone
 {
-    public DensityType DensityType;
     public List<Tile> Tiles;
+    public DensityType Type;
 
-    // Flood fills form a start tile
-    public Zone(Tile start)
+    public Zone()
     {
         Tiles = new List<Tile>();
-        DensityType = start.DensityType;
+    }
 
+    public void Build(Tile first)
+    {
+        Type = first.Type;
         Stack<Tile> stack = new Stack<Tile>();
-        stack.Push(start);
+        stack.Push(first);
 
         while (stack.Count > 0)
         {
             Tile tile = stack.Pop();
             Tiles.Add(tile);
 
+            DensityType topType = GetDensityType(x, z + 1, mapdata);
+            DensityType rightType = GetDensityType(x + 1, z, mapdata);
+            DensityType bottomType = GetDensityType(x, z - 1, mapdata);
+            DensityType leftType = GetDensityType(x - 1, z, mapdata);
+            if ()
 
-           // Debug.Log(tile.RightNeighbor.DensityType.Name);
-            /*
-            if (InZone(tile.TopNeighbor))
-                stack.Push(tile.TopNeighbor);
-            if (InZone(tile.BottomNeighbor))
+            if ()
                 stack.Push(tile.BottomNeighbor);
-            if (InZone(tile.LeftNeighbor))
+            if ()
                 stack.Push(tile.LeftNeighbor);
-            if (InZone(tile.RightNeighbor))
+            if ()
                 stack.Push(tile.RightNeighbor);
-            */
         }
-
     }
 
     private bool InZone(Tile neighbor)
     {
-        if (neighbor != null && !neighbor.Zoned && neighbor.DensityType.Name == DensityType.Name)
+        if (neighbor != null && neighbor.DensityType.Name == DensityType.Name)
             return true;
         return false;
     }

@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Coords
+{
+    public int X;
+    public int Y;
+    public Coords(int x, int y) {X = x; Y = y;}
+}
+
 public class DensityMap
 {
     public Tile[,] Tiles;
@@ -22,15 +29,24 @@ public class DensityMap
 
     public void SetTiles(MapData mapdata)
     {
-        for (var x = 0; x < Width; x++)
+        for (int z = 0; z < Length; z++)
         {
-            for (var y = 0; y < Length; y++)
+            for (int x = 0; x < Length; x++)
             {
-                if (Tiles[x, y] == null)
+                if (Tiles[x, z] == null)
                 {
-                    float value = (mapdata.Values[x, y] - mapdata.Min) / (mapdata.Max - mapdata.Min);
-                    Tiles[x, y] = new Tile(GetDensityType(value));
+                    Zone zone = new Zone();
                 }
+
+                DensityType type = GetDensityType(x, z, mapdata);
+                Stack<Coords> stack = new Stack<Tile>();
+                stack.Push(new Tile(type));
+
+
+                DensityType right = GetDensityType(x + 1, z, mapdata);
+                DensityType bottom = GetDensityType(x, z - 1, mapdata);
+                DensityType leftType = GetDensityType(x - 1, z, mapdata);
+                if
             }
         }
     }
@@ -93,16 +109,22 @@ public class DensityMap
         }
     }
 
-    private DensityType GetDensityType(float density)
+    private DensityType GetDensityType(int x, int z, MapData mapdata)
     {
+        float value = Normalize(mapdata.Values[x, z], mapdata.Max, mapdata.Min);
         for (int i = 0; i < NumTypes; i++)
         {
-            if (density < DensityTypes[i].Percentile)
+            if (value < DensityTypes[i].Percentile)
             {
                 return DensityTypes[i];
             }
         }
         return DensityTypes[NumTypes - 1];
+    }
+
+    private float Normalize(float val, float max, float min)
+    {
+        return (val - min) / (max - min);
     }
 
 }
