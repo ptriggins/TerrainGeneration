@@ -37,8 +37,14 @@ public class MapData
         {
             for (int z = 0; z < length; z++)
             {
-                Values[x, z] = (Values[x, z] - Min) / (Max - Min);
+                Values[x, z] = GetVal(x, z);
             }
         }
+    }
+
+    public float GetVal(int x, int z)
+    {
+        float val = Values[x, z];
+        return (val - Min) / (Max - Min);
     }
 }

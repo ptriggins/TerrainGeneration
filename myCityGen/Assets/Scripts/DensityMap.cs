@@ -35,7 +35,7 @@ public class DensityMap
         }
 
         MapData = new MapData(Width, Length);
-        MeshData = new MeshData(width, length, 10);
+        MeshData = new MeshData(width, length, 16);
 
     }
 
@@ -149,7 +149,7 @@ public class DensityMap
         }
     }
 
-    private int GetTypeIndex(float val)
+    public int GetTypeIndex(float val)
     {
         for (int i = 0; i < CityTypes.Count; i++)
         {
@@ -159,6 +159,11 @@ public class DensityMap
             }
         }
         return CityTypes.Count - 1;
+    }
+
+    public CityType GetType(float val)
+    {
+        return CityTypes[GetTypeIndex(val)];
     }
 
 }

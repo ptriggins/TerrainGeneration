@@ -11,8 +11,8 @@ public class MeshData
 
     public MeshData(int width, int length, int step)
     {
-        Width = width / step;
-        Length = length / step;
+        Width = 4//width / step;
+        Length = 4//length / step;
 
         int numQuads = (width - 1) * (length - 1);
         Vertices = new List<Vector3>(width * length);

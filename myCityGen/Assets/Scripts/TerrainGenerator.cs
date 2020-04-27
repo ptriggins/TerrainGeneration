@@ -8,6 +8,7 @@ public struct CityType
     public string Name;
     public float Percentile;
     public Color Color;
+
 }
 
 public class TerrainGenerator : MonoBehaviour
