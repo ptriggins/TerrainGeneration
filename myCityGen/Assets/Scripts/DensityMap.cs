@@ -54,6 +54,9 @@ public class DensityMap
                     Stack<Vector2> stack = new Stack<Vector2>();
                     stack.Push(new Vector2(x, z));
 
+                    float max = float.MinValue;
+                    Vector2 maxPos = new Vector2();
+
                     while (stack.Count > 0)
                     {
                         Vector2 current = stack.Pop();
@@ -119,18 +122,24 @@ public class DensityMap
                         DensityType type = DensityTypes[T];
 
                         Color color;
-                        if (val > topVal && val > bottomVal && val > leftVal && val > rightVal)
+                        if (count == 4 && val > max)
                         {
-                            PopCenters.Add(new PopCenter(new Vector2(x1, z1), val));
-                            color = Color.red;
+                            max = val;
+                            maxPos.x = x1; maxPos.y = z1;
                         }
-                            color = type.Color;
-
+                        color = type.Color;
+                        //else
+                            //color = Color.black;
                         Colors[x1 + z1 * Length] = color;
 
                         Tile tile = new Tile(current, type, color);
                         zone.Tiles.Add(tile);
                         Tiles[x1, z1] = tile;
+                    }
+
+                    if (max > 0)
+                    {
+                        Colors[(int)maxPos.x + (int)maxPos.y * Length] = Color.black;
                     }
 
                     Zones[T].Add(zone);     

@@ -5,6 +5,9 @@ using UnityEngine;
 public class RoadNetwork : MonoBehaviour
 {
     /*
+    public Vector2 Start;
+    public Vector2 Destinations;
+
     public void GenerateRoads()
     {
         Queue<Road> potential = new Queue<Road>();
@@ -36,15 +39,9 @@ public class RoadNetwork : MonoBehaviour
         }
     }
 
-    /*
-    function CheckLocalConstraints(ref RoadSegment segment)
-    {
-        
-    }
-
     public Road GetPotentialRoad(RoadSegment segment)
     {
-        // This is where you generate new proposed road segments based on 'global constraints' - height, nearby roads, etc.
+        
     }
     */
 

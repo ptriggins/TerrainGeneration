@@ -35,7 +35,7 @@ public class MeshData
         {
             for (int x = 0; x < Width; x++)
             {
-                Vertices.Add(startPos + new Vector3(x, values[x, z] * 100, -z));
+                Vertices.Add(startPos + new Vector3(x, values[x, z] * 5000, -z));
                 UVs.Add(new Vector2(x / (float)Width, z / (float)Length));
 
                 if (x < Width - 1 && z < Length - 1)
