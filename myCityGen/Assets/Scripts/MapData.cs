@@ -7,7 +7,7 @@ public class MapData
     public float Min;
     public float Max;
 
-    public mapdata(int width, int length)
+    public MapData(int width, int length)
     {
         Values = new float[width, length];
         Min = float.MaxValue;

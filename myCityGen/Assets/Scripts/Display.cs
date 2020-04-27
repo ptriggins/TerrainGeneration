@@ -4,17 +4,9 @@ using UnityEngine;
 
 public class Display : MonoBehaviour
 {
-    private MeshFilter MeshFilter;
-    private MeshRenderer MeshRenderer;
-    private Mesh Mesh;
-
-    void Awake()
-    {
-        MeshFilter = gameObject.AddComponent<MeshFilter>();
-        MeshRenderer = gameObject.AddComponent<MeshRenderer>();
-        Mesh = new Mesh();
-        MeshFilter.mesh = Mesh;
-    }
+    public MeshFilter MeshFilter;
+    public MeshRenderer MeshRenderer;
+    public Mesh Mesh;
 
     public void SetMesh(MeshData data)
     {

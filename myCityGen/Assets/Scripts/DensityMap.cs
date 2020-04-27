@@ -1,27 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AccidentalNoise;
 
 public class DensityMap
 {
+    public int Width;
+    public int Length;
+    public List<DensityType> DensityTypes;
+
     public Tile[,] Tiles;
+    public Color[] Colors;
     public List<List<Zone>> Zones;
 
-    List<DensityType> DensityTypes;
-    int Width, Length, NumTypes;
+    public MapData MapData;
+    public MeshData MeshData;
+    public Texture2D Texture;
 
-    public DensityMap(int width, int length, List<DensityType> densityTypes)
+    public DensityMap(int width, int length, ImplicitModuleBase module, List<DensityType> densityTypes)
     {
-        Width = width; Length = length;
+        Width = width;
+        Length = length;
+        DensityTypes = densityTypes;
+
         Tiles = new Tile[width, length];
+        Colors = new Color[width * length];
         Zones = new List<List<Zone>>();
 
-        NumTypes = densityTypes.Count;
-        DensityTypes = densityTypes;
-        NumTypes = densityTypes.Count;
+        MapData = new MapData(Width, Length);
+        MeshData = new MeshData(width, length);
+
+        MapData.SetData(module);
+
     }
 
-    public void SetTiles(MapData mapdata)
+    public void SetMap()
     {
         for (int z = 0; z < Length; z++)
         {
@@ -30,7 +43,7 @@ public class DensityMap
                 if (Tiles[x, z] == null)
                 {
                     Zone zone = new Zone();
-                    int T = GetTypeIndex(x, z, mapdata);
+                    int T = GetTypeIndex(x, z);
                     zone.Type = DensityTypes[T];
 
                     Stack<Vector2> stack = new Stack<Vector2>();
@@ -45,7 +58,7 @@ public class DensityMap
                         int count = 0;
                         if (x1 > 0)
                         {
-                            if (GetTypeIndex(x1 - 1, z1, mapdata) == T)
+                            if (GetTypeIndex(x1 - 1, z1) == T)
                             {
                                 stack.Push(current + new Vector2(-1, 0));
                                 count++;
@@ -53,7 +66,7 @@ public class DensityMap
                         }
                         if (x1 < Width - 1)
                         {
-                            if (GetTypeIndex(x1 + 1, z1, mapdata) == T)
+                            if (GetTypeIndex(x1 + 1, z1) == T)
                             {
                                 stack.Push(current + new Vector2(1, 0));
                                 count++;
@@ -62,7 +75,7 @@ public class DensityMap
                         }
                         if (z1 > 0)
                         {
-                            if (GetTypeIndex(x1, z1 - 1, mapdata) == T)
+                            if (GetTypeIndex(x1, z1 - 1) == T)
                             {
                                 stack.Push(current + new Vector2(0, -1));
                                 count++;
@@ -70,7 +83,7 @@ public class DensityMap
                         }
                         if (z1 < Length - 1)
                         {
-                            if (GetTypeIndex(x1, z + 1, mapdata) == T)
+                            if (GetTypeIndex(x1, z + 1) == T)
                             {
                                 stack.Push(current + new Vector2(0, 1));
                                 count++;
@@ -85,6 +98,7 @@ public class DensityMap
                             color = type.Color;
                         else
                             color = Color.black;
+                        Colors[x1 + z1 * Length] = color;
 
                         Tile tile = new Tile(current, type, color);
                         zone.Tiles.Add(tile);
@@ -98,17 +112,19 @@ public class DensityMap
         }
     }
 
-    private int GetTypeIndex(int x, int z, MapData mapdata)
+    private int GetTypeIndex(int x, int z)
     {
-        float value = Normalize(mapdata.Values[x, z], mapdata.Max, mapdata.Min);
-        for (int i = 0; i < NumTypes; i++)
+        float val = MapData.Values[x, z];
+        float normVal = Normalize(val, MapData.Max, MapData.Min);
+
+        for (int i = 0; i < DensityTypes.Count; i++)
         {
-            if (value < DensityTypes[i].Percentile)
+            if (val < DensityTypes[i].Percentile)
             {
                 return i;
             }
         }
-        return NumTypes - 1;
+        return DensityTypes.Count - 1;
     }
 
     private float Normalize(float val, float max, float min)

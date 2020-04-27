@@ -15,91 +15,57 @@ public class Generator : MonoBehaviour
 
     [Header("Map Size")]
     [SerializeField]
-    public int Width = 512;     // Size in x
+    public int Width = 512;
     [SerializeField]
-    public int Length = 512;    // Size in z
+    public int Length = 512;
 
     [Header("Noise")]
     [SerializeField]
-    public int Octaves = 6;                 // Level of complexity
+    public int Octaves = 6;
     [SerializeField]
-    public double Frequency = 1.25;         // Interval between samples
+    public double Frequency = 1.25;
+
+    [Header("Density Types")]
+    [SerializeField]
+    public List<DensityType> DensityTypes;
 
     public enum DrawMode {Texture, Mesh};
     [Header("Draw Mode")]
     [SerializeField]
     public DrawMode Mode;
 
-    [Header("Density Definitions")]
-    [SerializeField]
-    public List<DensityType> DensityTypes;
-
     private ImplicitFractal NoiseMap;
-    private mapdata MapData;
-    private MeshData MeshData;
-
     public DensityMap DensityMap;
-
     private Display Display;
 
-    //public AnimationCurve heightCurve;
-
-    void Start()
+    void Awake()
     {
         Display = (Display)FindObjectOfType(typeof(Display));
+        Display.MeshFilter = gameObject.AddComponent<MeshFilter>();
+        Display.MeshRenderer = gameObject.AddComponent<MeshRenderer>();
+        Display.Mesh = new Mesh();
+        Display.MeshFilter.mesh = Display.Mesh;
+        Instantiate();
     }
 
     void Instantiate()
     {
-        Tiles = new Tile[Width, Length];
-    }
-
-    void Initialize()
-    {
-
+        NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
+            Octaves, Frequency, Random.Range(0, int.MaxValue));
+        DensityMap = new DensityMap(Width, Length, NoiseMap);
+        Generate();
     }
 
     public void Generate()
     {
-
-        NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
-            Octaves, Frequency, Random.Range(0, int.MaxValue));
-        MapData = new mapdata(Width, Length);
-        MeshData = new MeshData(Width, Length);
-
-        SetTiles();
-        SetNeighbors();
-        SetBitmasks();
-        ZoneMap();
-
+        DensityMap.SetMap();
+        DensityMap.MeshData.SetData();
+        DensityMap.Texture = TextureGenerator.GetDensityTexture(Width, Length, DensityMap.Colors);
+        Display.SetMesh(DensityMap.MeshData);
+        Display.Draw(DensityMap.Texture);
     }
 
-    private void ZoneMap()
-    {
-        Zones = new List<Zone>[DensityTypes.Length];
-        for (int i = 0; i < DensityTypes.Length; i++)
-        {
-            Zones[i] = new List<Zone>();
-        }
-
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Length; y++)
-            {
-
-                // Constructs new zone from first available unzoned tile
-                Tile tile = Tiles[x, y];
-                if (tile.Zoned) continue;
-                Zone zone = new Zone(tile);
-
-                for (int i = 0; i < DensityTypes.Length; i++)
-                {
-                    if (zone.DensityType.Name == DensityTypes[i].Name)
-                        Zones[i].Add(zone);
-                }
-
-            }
-        }
-    }
+ 
+    
 
 }

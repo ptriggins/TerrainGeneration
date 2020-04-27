@@ -11,9 +11,10 @@ public class MeshData
 
     public MeshData(int width, int length)
     {
-        Width = width; Length = length;
-        int numQuads = (width - 1) * (length - 1);
+        Width = width;
+        Length = length;
 
+        int numQuads = (width - 1) * (length - 1);
         Vertices = new List<Vector3>(numQuads * 4);
         Triangles = new List<int>(numQuads * 6);
         UVs = new List<Vector2>(numQuads * 4);
@@ -26,7 +27,9 @@ public class MeshData
         UVs.Clear();
 
         int QuadNum = 0;
-        Vector3 startPos = new Vector3((Width - 1) / -2f, 0, (Length - 1) / 2f);
+        float startX = (Width - 1) / -2f;
+        float startZ = (Length - 1) / 2f;
+        Vector3 startPos = new Vector3(startX, 0, startZ);
 
         for (int z = 0; z < Length - 1; z++)
         {
