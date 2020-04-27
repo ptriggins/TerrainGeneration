@@ -57,12 +57,15 @@ public class DensityMap
                         Vector2 current = stack.Pop();
                         int x1 = (int)current.x;
                         int z1 = (int)current.y;
+
                         float val = GetVal(x1, z1);
+                        float leftVal = 0, rightVal = 0, topVal = 0, bottomVal = 0;
 
                         int count = 0;
                         if (x1 > 0)
                         {
-                            if (GetTypeIndex(GetVal(x1 - 1, z1)) == T)
+                            leftVal = GetVal(x1 - 1, z1);
+                            if (GetTypeIndex(leftVal) == T)
                             {
                                 count++;
                                 if (Tiles[x1 - 1, z1] == null)
@@ -74,7 +77,8 @@ public class DensityMap
 
                         if (x1 < Width - 1)
                         {
-                            if (GetTypeIndex(GetVal(x1 + 1, z1)) == T)
+                            rightVal = GetVal(x1 + 1, z1);
+                            if (GetTypeIndex(rightVal) == T)
                             {
                                 count++;
                                 if (Tiles[x1 + 1, z1] == null)
@@ -86,7 +90,8 @@ public class DensityMap
 
                         if (z1 > 0)
                         {
-                            if (GetTypeIndex(GetVal(x1, z1 - 1)) == T)
+                            topVal = GetVal(x1, z1 - 1);
+                            if (GetTypeIndex(topVal) == T)
                             {
                                 count++;
                                 if (Tiles[x1, z1 - 1] == null)
@@ -98,7 +103,8 @@ public class DensityMap
 
                         if (z1 < Length - 1)
                         {
-                            if (GetTypeIndex(GetVal(x1, z1 + 1)) == T)
+                            bottomVal = GetVal(x1, z1 + 1);
+                            if (GetTypeIndex(bottomVal) == T)
                             {
                                 count++;
                                 if (Tiles[x1, z1 + 1] == null)
@@ -111,24 +117,19 @@ public class DensityMap
                         DensityType type = DensityTypes[T];
 
                         Color color;
-                        if (count == 4)
+                        if (val > topVal && val > bottomVal && val > leftVal && val > rightVal)
+                            color = Color.red;
+                        else if (count == 4)
                             color = type.Color;
                         else
                             color = Color.black;
                         Colors[x1 + z1 * Length] = color;
-
-                        if (val > zone.MaxVal)
-                        {
-                            zone.MaxVal = val;
-                            zone.MaxPos = new Vector2(x1, z1);
-                        }
 
                         Tile tile = new Tile(current, type, color);
                         zone.Tiles.Add(tile);
                         Tiles[x1, z1] = tile;
                     }
 
-                    Colors[(int)zone.MaxPos.x + (int)zone.MaxPos.y * Length] = Color.red;
                     Zones[T].Add(zone);     
                 }
 
