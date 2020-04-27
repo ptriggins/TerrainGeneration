@@ -43,12 +43,6 @@ public class DensityMap
         {
             for (int x = 0; x < Length; x++)
             {
-                DensityType type = DensityTypes[GetTypeIndex(x, z)];
-                Colors[x + z * Length] = type.Color;
-                Tiles[x, z] = new Tile(new Vector2(x, z), type, type.Color);
-
-
-                /*
                 if (Tiles[x, z] == null)
                 {
                     Zone zone = new Zone();
@@ -65,46 +59,61 @@ public class DensityMap
                         int z1 = (int)current.y;
 
                         int count = 0;
-                        if (x1 > 0 && Tiles[x1 - 1, z1] == null)
+                        if (x1 > 0)
                         {
                             if (GetTypeIndex(x1 - 1, z1) == T)
                             {
-                                stack.Push(current + new Vector2(-1, 0));
                                 count++;
+                                if (Tiles[x1 - 1, z1] == null)
+                                    stack.Push(current + new Vector2(-1, 0));
                             }
                         }
-                        if (x1 < Width - 1 && Tiles[x1 + 1, z1] == null)
+                        else
+                            count++;
+
+                        if (x1 < Width - 1)
                         {
                             if (GetTypeIndex(x1 + 1, z1) == T)
                             {
-                                stack.Push(current + new Vector2(1, 0));
                                 count++;
-                            }
+                                if (Tiles[x1 + 1, z1] == null)
+                                    stack.Push(current + new Vector2(1, 0));
+                            }   
                         }
-                        if (z1 > 0 && Tiles[x1, z1 - 1] == null)
+                        else
+                            count++;
+
+                        if (z1 > 0)
                         {
                             if (GetTypeIndex(x1, z1 - 1) == T)
                             {
-                                stack.Push(current + new Vector2(0, -1));
                                 count++;
+                                if (Tiles[x1, z1 - 1] == null)
+                                    stack.Push(current + new Vector2(0, -1));
                             }
                         }
-                        if (z1 < Length - 1 && Tiles[x1, z + 1] == null)
+                        else
+                            count++;
+
+                        if (z1 < Length - 1)
                         {
-                            if (GetTypeIndex(x1, z + 1) == T)
+                            if (GetTypeIndex(x1, z1 + 1) == T)
                             {
-                                stack.Push(current + new Vector2(0, 1));
                                 count++;
+                                if (Tiles[x1, z1 + 1] == null)
+                                    stack.Push(current + new Vector2(0, 1));
                             }
                         }
+                        else
+                            count++;
 
                         DensityType type = DensityTypes[T];
 
                         Color color;
-                        //if (count == 4)
+                        if (count == 4)
                             color = type.Color;
-                        //else
-                            //color = Color.black;
+                        else
+                            color = Color.black;
                         Colors[x1 + z1 * Length] = color;
 
                         Tile tile = new Tile(current, type, color);
@@ -112,10 +121,8 @@ public class DensityMap
                         Tiles[x1, z1] = tile;
                     }
 
-                    Zones[T].Add(zone);
-                   
+                    Zones[T].Add(zone);     
                 }
-                */
 
             }
         }
