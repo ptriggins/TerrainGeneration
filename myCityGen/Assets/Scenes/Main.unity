@@ -152,21 +152,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Width: 250
   Length: 250
-  Octaves: 6
+  Octaves: 20
   Frequency: 1
   DensityTypes:
-  - Name: Wilderness
-    Percentile: 0.2
+  - Name: Outpost
+    Percentile: 0.1
     Color: {r: 0.062349062, g: 0.3490566, b: 0.05762726, a: 0}
-  - Name: Farmlands
-    Percentile: 0.4
+  - Name: Village
+    Percentile: 0.5
     Color: {r: 0.7206536, g: 0.9339623, b: 0.63879496, a: 0}
-  - Name: Suburbs
-    Percentile: 0.6
+  - Name: Town
+    Percentile: 0.7
     Color: {r: 0.9748029, g: 0.9811321, b: 0.66180134, a: 0}
-  - Name: Urban
-    Percentile: 0.8
+  - Name: City
+    Percentile: 0.9
     Color: {r: 1, g: 0.71519816, b: 0.24056602, a: 0}
+  - Name: Metropolis
+    Percentile: 1
+    Color: {r: 1, g: 0.28825688, b: 0, a: 0}
+  RoadNewtork: {fileID: 0}
 --- !u!4 &964032408
 Transform:
   m_ObjectHideFlags: 0
@@ -214,7 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MeshFilter: {fileID: 1118280570}
   MeshRenderer: {fileID: 1118280569}
-  Mesh: {fileID: 1220355703}
+  Mesh: {fileID: 1343467773}
 --- !u!4 &1118280568
 Transform:
   m_ObjectHideFlags: 0
@@ -275,8 +279,8 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118280566}
-  m_Mesh: {fileID: 1220355703}
---- !u!43 &1220355703
+  m_Mesh: {fileID: 1343467773}
+--- !u!43 &1343467773
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

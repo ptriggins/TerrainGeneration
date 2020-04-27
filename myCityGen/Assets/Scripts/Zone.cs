@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class Zone
 {
-    public DensityType Type;
+    public CityType Type;
     public List<Tile> Tiles;
 
     public Zone()

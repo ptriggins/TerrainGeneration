@@ -7,7 +7,7 @@ public class DensityMap
 {
     public int Width;
     public int Length;
-    public List<DensityType> DensityTypes;
+    public List<CityType> CityTypes;
 
     public Tile[,] Tiles;
     public Color[] Colors;
@@ -18,24 +18,24 @@ public class DensityMap
     public MeshData MeshData;
     public Texture2D Texture;
 
-    public DensityMap(int width, int length, List<DensityType> densityTypes)
+    public DensityMap(int width, int length, List<CityType> cityTypes)
     {
         Width = width;
         Length = length;
-        DensityTypes = densityTypes;
+        CityTypes = cityTypes;
 
         Tiles = new Tile[width, length];
         Colors = new Color[width * length];
-        Zones = new List<Zone>[densityTypes.Count];
+        Zones = new List<Zone>[cityTypes.Count];
         PopCenters = new List<PopCenter>();
 
-        for (int i = 0; i < densityTypes.Count; i++)
+        for (int i = 0; i < cityTypes.Count; i++)
         {
             Zones[i] = new List<Zone>();
         }
 
         MapData = new MapData(Width, Length);
-        MeshData = new MeshData(width, length);
+        MeshData = new MeshData(width, length, 10);
 
     }
 
@@ -49,7 +49,7 @@ public class DensityMap
                 {
                     Zone zone = new Zone();
                     int T = GetTypeIndex(MapData.Values[x, z]);
-                    zone.Type = DensityTypes[T];
+                    zone.Type = CityTypes[T];
 
                     Stack<Vector2> stack = new Stack<Vector2>();
                     stack.Push(new Vector2(x, z));
@@ -119,7 +119,7 @@ public class DensityMap
                         else
                             count++;
 
-                        DensityType type = DensityTypes[T];
+                        CityType type = CityTypes[T];
 
                         Color color;
                         if (count == 4 && val > max)
@@ -151,14 +151,14 @@ public class DensityMap
 
     private int GetTypeIndex(float val)
     {
-        for (int i = 0; i < DensityTypes.Count; i++)
+        for (int i = 0; i < CityTypes.Count; i++)
         {
-            if (val < DensityTypes[i].Percentile)
+            if (val < CityTypes[i].Percentile)
             {
                 return i;
             }
         }
-        return DensityTypes.Count - 1;
+        return CityTypes.Count - 1;
     }
 
 }

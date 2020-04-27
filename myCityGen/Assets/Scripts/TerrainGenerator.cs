@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AccidentalNoise;
 
 [System.Serializable]
-public struct DensityType
+public struct CityType
 {
     public string Name;
     public float Percentile;
@@ -27,7 +27,7 @@ public class TerrainGenerator : MonoBehaviour
 
     [Header("Density Types")]
     [SerializeField]
-    public List<DensityType> DensityTypes;
+    public List<CityType> CityTypes;
 
     private ImplicitFractal NoiseMap;
     public DensityMap DensityMap;
@@ -38,7 +38,7 @@ public class TerrainGenerator : MonoBehaviour
     {
         NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
             Octaves, Frequency, Random.Range(0, int.MaxValue));
-        DensityMap = new DensityMap(Width, Length, DensityTypes);
+        DensityMap = new DensityMap(Width, Length, CityTypes);
     }
 
     public void Generate()
