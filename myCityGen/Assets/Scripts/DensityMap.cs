@@ -12,6 +12,7 @@ public class DensityMap
     public Tile[,] Tiles;
     public Color[] Colors;
     public List<Zone>[] Zones;
+    public List<PopCenter> PopCenters;
 
     public MapData MapData;
     public MeshData MeshData;
@@ -25,8 +26,9 @@ public class DensityMap
 
         Tiles = new Tile[width, length];
         Colors = new Color[width * length];
-
         Zones = new List<Zone>[densityTypes.Count];
+        PopCenters = new List<PopCenter>();
+
         for (int i = 0; i < densityTypes.Count; i++)
         {
             Zones[i] = new List<Zone>();
@@ -118,7 +120,10 @@ public class DensityMap
 
                         Color color;
                         if (val > topVal && val > bottomVal && val > leftVal && val > rightVal)
+                        {
+                            PopCenters.Add(new PopCenter(new Vector2(x1, z1), val));
                             color = Color.red;
+                        }
                         else if (count == 4)
                             color = type.Color;
                         else

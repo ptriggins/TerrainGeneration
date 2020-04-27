@@ -103,6 +103,7 @@
      <Compile Include="Assets\Scripts\MathHelper.cs" />
      <Compile Include="Assets\Scripts\MeshData.cs" />
      <Compile Include="Assets\Scripts\MeshTest.cs" />
+     <Compile Include="Assets\Scripts\PopCenter.cs" />
      <Compile Include="Assets\Scripts\Road.cs" />
      <Compile Include="Assets\Scripts\RoadNetwork.cs" />
      <Compile Include="Assets\Scripts\TextureGenerator.cs" />
