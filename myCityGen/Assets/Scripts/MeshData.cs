@@ -20,7 +20,7 @@ public class MeshData
         UVs = new List<Vector2>(width * length);
     }
 
-    public void SetData()
+    public void SetData(float[,] values)
     {
         Vertices.Clear();
         Triangles.Clear();
@@ -35,7 +35,7 @@ public class MeshData
         {
             for (int x = 0; x < Width; x++)
             {
-                Vertices.Add(startPos + new Vector3(x, 0, -z));
+                Vertices.Add(startPos + new Vector3(x, values[x, z] * 100, -z));
                 UVs.Add(new Vector2(x / (float)Width, z / (float)Length));
 
                 if (x < Width - 1 && z < Length - 1)

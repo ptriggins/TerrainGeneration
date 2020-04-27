@@ -48,7 +48,7 @@ public class DensityMap
                 if (Tiles[x, z] == null)
                 {
                     Zone zone = new Zone();
-                    int T = GetTypeIndex(GetVal(x, z));
+                    int T = GetTypeIndex(MapData.Values[x, z]);
                     zone.Type = DensityTypes[T];
 
                     Stack<Vector2> stack = new Stack<Vector2>();
@@ -60,13 +60,13 @@ public class DensityMap
                         int x1 = (int)current.x;
                         int z1 = (int)current.y;
 
-                        float val = GetVal(x1, z1);
+                        float val = MapData.Values[x1, z1];
                         float leftVal = 0, rightVal = 0, topVal = 0, bottomVal = 0;
 
                         int count = 0;
                         if (x1 > 0)
                         {
-                            leftVal = GetVal(x1 - 1, z1);
+                            leftVal = MapData.Values[x1 - 1, z1];
                             if (GetTypeIndex(leftVal) == T)
                             {
                                 count++;
@@ -79,7 +79,7 @@ public class DensityMap
 
                         if (x1 < Width - 1)
                         {
-                            rightVal = GetVal(x1 + 1, z1);
+                            rightVal = MapData.Values[x1 + 1, z1];
                             if (GetTypeIndex(rightVal) == T)
                             {
                                 count++;
@@ -92,7 +92,7 @@ public class DensityMap
 
                         if (z1 > 0)
                         {
-                            topVal = GetVal(x1, z1 - 1);
+                            topVal = MapData.Values[x1, z1 - 1];
                             if (GetTypeIndex(topVal) == T)
                             {
                                 count++;
@@ -105,7 +105,7 @@ public class DensityMap
 
                         if (z1 < Length - 1)
                         {
-                            bottomVal = GetVal(x1, z1 + 1);
+                            bottomVal = MapData.Values[x1, z1 + 1];
                             if (GetTypeIndex(bottomVal) == T)
                             {
                                 count++;
@@ -124,10 +124,8 @@ public class DensityMap
                             PopCenters.Add(new PopCenter(new Vector2(x1, z1), val));
                             color = Color.red;
                         }
-                        else if (count == 4)
                             color = type.Color;
-                        else
-                            color = Color.black;
+
                         Colors[x1 + z1 * Length] = color;
 
                         Tile tile = new Tile(current, type, color);
@@ -152,12 +150,6 @@ public class DensityMap
             }
         }
         return DensityTypes.Count - 1;
-    }
-
-    private float GetVal(int x, int z)
-    {
-        float val = MapData.Values[x, z];
-        return (val - MapData.Min) / (MapData.Max - MapData.Min);
     }
 
 }

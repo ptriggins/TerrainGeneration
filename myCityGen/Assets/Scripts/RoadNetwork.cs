@@ -2,36 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public struct RoadType
-{
-    public string Name;
-    public string Color;
-}
-
 public class RoadNetwork : MonoBehaviour
 {
     /*
     public void GenerateRoads()
     {
-        Queue<Road> potentialRoads = new Queue<Road>();
-        List<Road> acceptedRoads = new List<Road>();
-        potentialRoads.Enqueue(new Road());
+        Queue<Road> potential = new Queue<Road>();
+        List<Road> accepted = new List<Road>();
+        potential.Enqueue(new Road());
 
         int i = 0;
         int limit = 10000;
 
-        while (i < limit || potentialRoads.Count != 0)
+        while (i < limit || potential.Count != 0)
         {
-            Road currentRoad = potentialRoads.Dequeue();
+            Road current = potential.Dequeue();
 
-            // Check if it's acceptable and modify it as needed
-            bool segmentAccepted = CheckLocalConstraints(ref currentSegment);
+
+            //bool segmentAccepted = CheckLocalConstraints(ref currentSegment);
 
             if (segmentAccepted)
             {
-                // Add this segment to the actual road network
-                acceptedSegments.Add(currentSegment);
+                accepted.Add(current);
 
                 // Propose new road segments branching from this one
                 foreach (Road possibleSegment in GeneratePossibleSegments(currentSegment))

@@ -5,15 +5,9 @@ using UnityEngine;
 
 public class Road : MonoBehaviour
 {
-    /*
-    public float Length;
-    public float Angle;
-    public RoadType Type;
+    public Vector3 StartPos;
+    public Vector3 EndPos;
 
-    public void DrawSegment()
-    {
-
-    }
-    */
+    
 
 }

@@ -55,7 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Editor\GeneratorEditor.cs" />
+     <Compile Include="Assets\Editor\TerrainGeneratorEditor.cs" />
  <Reference Include="UnityEditor.TestRunner">
  <HintPath>C:/Users/ptylerrj/Documents/GitHub/TerrainGeneration/myCityGen/Library/ScriptAssemblies/UnityEditor.TestRunner.dll</HintPath>
  </Reference>
