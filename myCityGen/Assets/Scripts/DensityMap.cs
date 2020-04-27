@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coords
-{
-    public int X;
-    public int Y;
-    public Coords(int x, int y) {X = x; Y = y;}
-}
-
 public class DensityMap
 {
     public Tile[,] Tiles;
     public List<List<Zone>> Zones;
+
     List<DensityType> DensityTypes;
     int Width, Length, NumTypes;
 
@@ -36,90 +30,85 @@ public class DensityMap
                 if (Tiles[x, z] == null)
                 {
                     Zone zone = new Zone();
+                    int T = GetTypeIndex(x, z, mapdata);
+                    zone.Type = DensityTypes[T];
+
+                    Stack<Vector2> stack = new Stack<Vector2>();
+                    stack.Push(new Vector2(x, z));
+
+                    while (stack.Count > 0)
+                    {
+                        Vector2 current = stack.Pop();
+                        int x1 = (int)current.x;
+                        int z1 = (int)current.y;
+
+                        int count = 0;
+                        if (x1 > 0)
+                        {
+                            if (GetTypeIndex(x1 - 1, z1, mapdata) == T)
+                            {
+                                stack.Push(current + new Vector2(-1, 0));
+                                count++;
+                            }
+                        }
+                        if (x1 < Width - 1)
+                        {
+                            if (GetTypeIndex(x1 + 1, z1, mapdata) == T)
+                            {
+                                stack.Push(current + new Vector2(1, 0));
+                                count++;
+                            }
+
+                        }
+                        if (z1 > 0)
+                        {
+                            if (GetTypeIndex(x1, z1 - 1, mapdata) == T)
+                            {
+                                stack.Push(current + new Vector2(0, -1));
+                                count++;
+                            }
+                        }
+                        if (z1 < Length - 1)
+                        {
+                            if (GetTypeIndex(x1, z + 1, mapdata) == T)
+                            {
+                                stack.Push(current + new Vector2(0, 1));
+                                count++;
+                            }
+
+                        }
+
+                        DensityType type = DensityTypes[T];
+
+                        Color color;
+                        if (count == 4)
+                            color = type.Color;
+                        else
+                            color = Color.black;
+
+                        Tile tile = new Tile(current, type, color);
+                        zone.Tiles.Add(tile);
+                        Tiles[x1, z1] = tile;
+                    }
+
+                    Zones[T].Add(zone);
                 }
-
-                DensityType type = GetDensityType(x, z, mapdata);
-                Stack<Coords> stack = new Stack<Tile>();
-                stack.Push(new Tile(type));
-
-
-                DensityType right = GetDensityType(x + 1, z, mapdata);
-                DensityType bottom = GetDensityType(x, z - 1, mapdata);
-                DensityType leftType = GetDensityType(x - 1, z, mapdata);
-                if
+                
             }
         }
     }
 
-    public void SetNeighbors()
-    {
-        for (var x = 0; x < Width; x++)
-        {
-            for (var y = 0; y < Length; y++)
-            {
-                Tile tile = Tiles[x, y];
-
-                if (y != 0)
-                    tile.TopNeighbor = Tiles[x, y - 1];
-                if (y != Length - 1)
-                    tile.BottomNeighbor = Tiles[x, y + 1];
-                if (x != 0)
-                    tile.LeftNeighbor = Tiles[x - 1, y];
-                if (x != Width - 1)
-                    tile.RightNeighbor = Tiles[x + 1, y];
-            }
-        }
-    }
-
-    private void SetBitmasks()
-    {
-        for (var x = 0; x < Tiles.GetLength(0); x++)
-        {
-            for (var y = 0; y < Tiles.GetLength(1); y++)
-            {
-                Tiles[x, y].SetBitmask();
-            }
-        }
-    }
-
-    private void SetZones()
-    {
-        for (int i = 0; i < DensityTypes.Count; i++)
-        {
-            Zones[i] = new List<Zone>();
-        }
-
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Length; y++)
-            {
-
-                // Constructs new zone from first available unzoned tile
-                Tile tile = Tiles[x, y];
-                if (tile.Zoned) continue;
-                Zone zone = new Zone(tile);
-
-                for (int i = 0; i < DensityTypes.Length; i++)
-                {
-                    if (zone.DensityType.Name == DensityTypes[i].Name)
-                        Zones[i].Add(zone);
-                }
-
-            }
-        }
-    }
-
-    private DensityType GetDensityType(int x, int z, MapData mapdata)
+    private int GetTypeIndex(int x, int z, MapData mapdata)
     {
         float value = Normalize(mapdata.Values[x, z], mapdata.Max, mapdata.Min);
         for (int i = 0; i < NumTypes; i++)
         {
             if (value < DensityTypes[i].Percentile)
             {
-                return DensityTypes[i];
+                return i;
             }
         }
-        return DensityTypes[NumTypes - 1];
+        return NumTypes - 1;
     }
 
     private float Normalize(float val, float max, float min)
