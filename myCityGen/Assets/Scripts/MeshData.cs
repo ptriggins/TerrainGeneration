@@ -15,9 +15,9 @@ public class MeshData
         Length = length;
 
         int numQuads = (width - 1) * (length - 1);
-        Vertices = new List<Vector3>(numQuads * 4);
+        Vertices = new List<Vector3>(width * length);
         Triangles = new List<int>(numQuads * 6);
-        UVs = new List<Vector2>(numQuads * 4);
+        UVs = new List<Vector2>(width * length);
     }
 
     public void SetData()
@@ -26,19 +26,24 @@ public class MeshData
         Triangles.Clear();
         UVs.Clear();
 
-        int QuadNum = 0;
         float startX = (Width - 1) / -2f;
         float startZ = (Length - 1) / 2f;
         Vector3 startPos = new Vector3(startX, 0, startZ);
 
-        for (int z = 0; z < Length - 1; z++)
+        int i = 0;
+        for (int z = 0; z < Length; z++)
         {
-            for (int x = 0; x < Width - 1; x++)
+            for (int x = 0; x < Width; x++)
             {
                 Vertices.Add(startPos + new Vector3(x, 0, -z));
                 UVs.Add(new Vector2(x / (float)Width, z / (float)Length));
-                AddTriangles(QuadNum);
-                QuadNum++;
+
+                if (x < Width - 1 && z < Length - 1)
+                {
+                    AddTriangles(i);
+                }
+                i++;
+
             }
         }
 
@@ -46,12 +51,12 @@ public class MeshData
 
     private void AddTriangles(int i)
     {
-        Triangles.Add(i * 4);
-        Triangles.Add(i * 4 + 1);
-        Triangles.Add(i * 4 + Width + 1);
-        Triangles.Add(i * 4);
-        Triangles.Add(i * 4 + Width + 1);
-        Triangles.Add(i * 4 + Width);
+        Triangles.Add(i);
+        Triangles.Add(i + 1);
+        Triangles.Add(i + Width + 1);
+        Triangles.Add(i);
+        Triangles.Add(i + Width + 1);
+        Triangles.Add(i + Width);
     }
 
 }

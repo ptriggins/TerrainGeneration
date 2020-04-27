@@ -18,7 +18,7 @@ public class Display : MonoBehaviour
 
     public void Draw(Texture2D texture)
     {
-        MeshRenderer.materials[0].mainTexture = texture;
+        MeshRenderer.sharedMaterials[0].mainTexture = texture;
         MeshRenderer.transform.localScale = new Vector3(texture.width, 1, texture.height);
     }
 

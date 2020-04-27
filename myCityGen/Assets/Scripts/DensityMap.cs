@@ -11,7 +11,7 @@ public class DensityMap
 
     public Tile[,] Tiles;
     public Color[] Colors;
-    public List<List<Zone>> Zones;
+    public List<Zone>[] Zones;
 
     public MapData MapData;
     public MeshData MeshData;
@@ -25,7 +25,12 @@ public class DensityMap
 
         Tiles = new Tile[width, length];
         Colors = new Color[width * length];
-        Zones = new List<List<Zone>>();
+
+        Zones = new List<Zone>[densityTypes.Count];
+        for (int i = 0; i < densityTypes.Count; i++)
+        {
+            Zones[i] = new List<Zone>();
+        }
 
         MapData = new MapData(Width, Length);
         MeshData = new MeshData(width, length);
@@ -56,7 +61,7 @@ public class DensityMap
                         int z1 = (int)current.y;
 
                         int count = 0;
-                        if (x1 > 0)
+                        if (x1 > 0 && Tiles[x1 - 1, z1] == null)
                         {
                             if (GetTypeIndex(x1 - 1, z1) == T)
                             {
@@ -64,7 +69,7 @@ public class DensityMap
                                 count++;
                             }
                         }
-                        if (x1 < Width - 1)
+                        if (x1 < Width - 1 && Tiles[x1 + 1, z1] == null)
                         {
                             if (GetTypeIndex(x1 + 1, z1) == T)
                             {
@@ -73,7 +78,7 @@ public class DensityMap
                             }
 
                         }
-                        if (z1 > 0)
+                        if (z1 > 0 && Tiles[x1, z1 - 1] == null)
                         {
                             if (GetTypeIndex(x1, z1 - 1) == T)
                             {
@@ -81,7 +86,7 @@ public class DensityMap
                                 count++;
                             }
                         }
-                        if (z1 < Length - 1)
+                        if (z1 < Length - 1 && Tiles[x1, z + 1] == null)
                         {
                             if (GetTypeIndex(x1, z + 1) == T)
                             {
