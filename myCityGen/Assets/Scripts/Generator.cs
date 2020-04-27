@@ -37,7 +37,7 @@ public class Generator : MonoBehaviour
     {
         NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
             Octaves, Frequency, Random.Range(0, int.MaxValue));
-        DensityMap = new DensityMap(Width, Length, NoiseMap, DensityTypes);
+        DensityMap = new DensityMap(Width, Length, DensityTypes);
     }
 
     public void Generate()
@@ -48,6 +48,7 @@ public class Generator : MonoBehaviour
         Display.Mesh = new Mesh();
         Display.MeshFilter.mesh = Display.Mesh;
 
+        DensityMap.MapData.SetData(NoiseMap);
         DensityMap.SetMap();
         DensityMap.MeshData.SetData();
         DensityMap.Texture = TextureGenerator.GetDensityTexture(Width, Length, DensityMap.Colors);

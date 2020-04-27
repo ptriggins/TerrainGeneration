@@ -17,7 +17,7 @@ public class DensityMap
     public MeshData MeshData;
     public Texture2D Texture;
 
-    public DensityMap(int width, int length, ImplicitModuleBase module, List<DensityType> densityTypes)
+    public DensityMap(int width, int length, List<DensityType> densityTypes)
     {
         Width = width;
         Length = length;
@@ -35,8 +35,6 @@ public class DensityMap
         MapData = new MapData(Width, Length);
         MeshData = new MeshData(width, length);
 
-        MapData.SetData(module);
-
     }
 
     public void SetMap()
@@ -45,6 +43,12 @@ public class DensityMap
         {
             for (int x = 0; x < Length; x++)
             {
+                DensityType type = DensityTypes[GetTypeIndex(x, z)];
+                Colors[x + z * Length] = type.Color;
+                Tiles[x, z] = new Tile(new Vector2(x, z), type, type.Color);
+
+
+                /*
                 if (Tiles[x, z] == null)
                 {
                     Zone zone = new Zone();
@@ -76,7 +80,6 @@ public class DensityMap
                                 stack.Push(current + new Vector2(1, 0));
                                 count++;
                             }
-
                         }
                         if (z1 > 0 && Tiles[x1, z1 - 1] == null)
                         {
@@ -93,16 +96,15 @@ public class DensityMap
                                 stack.Push(current + new Vector2(0, 1));
                                 count++;
                             }
-
                         }
 
                         DensityType type = DensityTypes[T];
 
                         Color color;
-                        if (count == 4)
+                        //if (count == 4)
                             color = type.Color;
-                        else
-                            color = Color.black;
+                        //else
+                            //color = Color.black;
                         Colors[x1 + z1 * Length] = color;
 
                         Tile tile = new Tile(current, type, color);
@@ -111,8 +113,10 @@ public class DensityMap
                     }
 
                     Zones[T].Add(zone);
+                   
                 }
-                
+                */
+
             }
         }
     }
@@ -124,7 +128,7 @@ public class DensityMap
 
         for (int i = 0; i < DensityTypes.Count; i++)
         {
-            if (val < DensityTypes[i].Percentile)
+            if (normVal < DensityTypes[i].Percentile)
             {
                 return i;
             }
