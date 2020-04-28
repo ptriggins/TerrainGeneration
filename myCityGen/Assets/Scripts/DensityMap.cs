@@ -40,7 +40,6 @@ public class DensityMap : MonoBehaviour
 
     public void SetMap()
     {
-        float[,] values = MapData.Values;
         for (int z = 0; z < Length; z++)
         {
             for (int x = 0; x < Length; x++)
@@ -53,81 +52,45 @@ public class DensityMap : MonoBehaviour
                     float max = float.MinValue;
                     Vector2 maxPos = new Vector2();
 
-                    int T = Densities.GetIndex(values[x, z]);
+                    int T = Densities.GetIndex(MapData.Values[x, z]);
 
                     while (stack.Count > 0)
                     {
                         Vector2 current = stack.Pop();
                         int x1 = (int)current.x;
                         int z1 = (int)current.y;
-                        float val = values[x1, z1];
-                        float left = 0, right = 0, top = 0, bottom = 0;
+                        float val = MapData.Values[x1, z1];
 
-                        int count = 0;
+                        int n = 0;
+
                         if (x1 > 0)
-                        {
-                            left = values[x1 - 1, z1];
-                            if (Densities.GetIndex(left) == T)
-                            {
-                                count++;
-                                if (Tiles[x1 - 1, z1] == null)
-                                    stack.Push(current + new Vector2(-1, 0));
-                            }
-                        }
+                            n += CheckAndPush(x1 - 1, z1, T, stack);
                         else
-                            count++;
+                            n++;
 
                         if (x1 < Width - 1)
-                        {
-                            right = MapData.Values[x1 + 1, z1];
-                            if (Densities.GetIndex(right) == T)
-                            {
-                                count++;
-                                if (Tiles[x1 + 1, z1] == null)
-                                    stack.Push(current + new Vector2(1, 0));
-                            }   
-                        }
+                            n += CheckAndPush(x1 + 1, z1, T, stack);
                         else
-                            count++;
+                            n++;
 
                         if (z1 > 0)
-                        {
-                            top = MapData.Values[x1, z1 - 1];
-                            if (Densities.GetIndex(top) == T)
-                            {
-                                count++;
-                                if (Tiles[x1, z1 - 1] == null)
-                                    stack.Push(current + new Vector2(0, -1));
-                            }
-                        }
+                            n += CheckAndPush(x1, z1 - 1, T, stack);               
                         else
-                            count++;
+                            n++;
 
                         if (z1 < Length - 1)
-                        {
-                            bottom = MapData.Values[x1, z1 + 1];
-                            if (GetTypeIndex(bottomVal) == T)
-                            {
-                                count++;
-                                if (Tiles[x1, z1 + 1] == null)
-                                    stack.Push(current + new Vector2(0, 1));
-                            }
-                        }
+                            n += CheckAndPush(x1, z1 + 1, T, stack);
                         else
-                            count++;
+                            n++;
 
-                        CityType type = CityTypes[T];
-
-                        Color color;
-                        if (count == 4 && val > max)
+                        if (n == 4 && val > max)
                         {
                             max = val;
                             maxPos.x = x1; maxPos.y = z1;
                         }
-                        color = type.Color;
-                        //else
-                            //color = Color.black;
-                        Colors[x1 + z1 * Length] = color;
+
+                        DensityType type = Densities.GetType(T);
+                        Colors[x1 + z1 * Length] = type.Color;
 
                         Tile tile = new Tile(current, type, color);
                         Tiles[x1, z1] = tile;
@@ -142,6 +105,18 @@ public class DensityMap : MonoBehaviour
 
             }
         }
+    }
+
+    private int CheckAndPush(int x, int z, int t, Stack<Vector2> stack)
+    {
+        float value = MapData.Values[x, z];
+        if (Densities.GetIndex(value) == t)
+        {
+            if (Tiles[x, z] == null)
+                stack.Push(new Vector2(x, z));
+            return 1;
+        }
+        return 0;
     }
 
 }
