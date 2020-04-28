@@ -102,13 +102,11 @@
      <Compile Include="Assets\Scripts\MapData.cs" />
      <Compile Include="Assets\Scripts\MathHelper.cs" />
      <Compile Include="Assets\Scripts\MeshData.cs" />
-     <Compile Include="Assets\Scripts\PopCenter.cs" />
      <Compile Include="Assets\Scripts\Road.cs" />
      <Compile Include="Assets\Scripts\RoadNetwork.cs" />
      <Compile Include="Assets\Scripts\TerrainGenerator.cs" />
      <Compile Include="Assets\Scripts\TextureGenerator.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />
-     <Compile Include="Assets\Scripts\Zone.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>C:/Users/ptylerrj/Documents/GitHub/TerrainGeneration/myCityGen/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>

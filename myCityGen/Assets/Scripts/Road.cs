@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Road : MonoBehaviour
+public class Road
 {
     public Vector3 Start;
     public Vector3 End;
@@ -16,14 +16,14 @@ public class Road : MonoBehaviour
         Angle = Vector3.Angle(Vector3.right, end - start);
     }
 
-    public Vector3 GetExtension(float variation)
+    public Vector3 GetExtension(float variation, float length)
     {
         Quaternion rotation = Quaternion.Euler(0, Angle + variation, 0);
         Vector3 direction = rotation * Vector3.right;
-        return Start + rotation * direction;
+        return Start + rotation * direction * length;
     }
 
-    public void DrawRoad()
+    public void Draw()
     {
         GameObject line = new GameObject();
         line.AddComponent<LineRenderer>();
