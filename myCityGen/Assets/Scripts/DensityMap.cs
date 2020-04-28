@@ -14,25 +14,32 @@ public class DensityMap : MonoBehaviour
 
     public Tile[,] Tiles;
     public Color[] Colors;
-    public List<PopCenter> PopCenters;
 
     public MapData MapData;
     public MeshData MeshData;
     public Texture2D Texture;
 
+    public void Initialize(int width, int length)
+    {
+        Width = width;
+        Length = length;
+        MapData = new MapData(Width, Length);
+        MeshData = new MeshData(width, length, 16);
+
+    }
+
     public void Instantiate(int width, int length)
     {
         Tiles = new Tile[width, length];
         Colors = new Color[width * length];
+        MapData = new MapData(Width, Length);
+        MeshData = new MeshData(4, 4);
     }
 
-    public DensityMap(int width, int length)
+    public void Initialize(int width, int length)
     {
         Width = width;
         Length = length;
-
-        PopCenters = new List<PopCenter>();
-
         MapData = new MapData(Width, Length);
         MeshData = new MeshData(width, length, 16);
 

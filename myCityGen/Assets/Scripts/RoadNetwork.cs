@@ -10,15 +10,23 @@ public class RoadNetwork : MonoBehaviour
     [SerializeField]
     public float Thickness = 4;
 
+    public Vector3 TopLeft;
     public Tile[,] Tiles;
     public float[,] Values;
-    public Vector3 TopLeft;
+    public List<Road> Accepted;
+
+    private Transform Transform;
 
     public void Initialize(Tile[,] tiles, float[,] values, Vector3 topleft)
     {
+        TopLeft = topleft;
         Tiles = tiles;
         Values = values;
-        TopLeft = topleft;
+    }
+
+    public void Instantiate()
+    {
+        Accepted = new List<Road>();
     }
 
     public void Generate(Vector3 start)
@@ -37,11 +45,11 @@ public class RoadNetwork : MonoBehaviour
         while (candidates.Count > 0 && i < limit)
         {
             Road current = candidates.Dequeue();
-            current.Draw();
-            //GetNextRoads(current, candidateQueue);
-            
+            Accepted.Add(current);
+            GetCandidates(current, candidates);
+            i++;
         }
-        i++;
+        
     }
 
     public void GetCandidates(Road current, Queue<Road> queue)
@@ -70,5 +78,13 @@ public class RoadNetwork : MonoBehaviour
             queue.Enqueue(new Road(start, current.GetExtension(90, Length)));
         if (Random.Range(0, 1) < type.Percentile / 2)
             queue.Enqueue(new Road(start, current.GetExtension(90, Length)));
+    }
+
+    public void Draw()
+    {
+        for (int i = 0; i < Accepted.Count; i++)
+        {
+
+        }
     }
 }

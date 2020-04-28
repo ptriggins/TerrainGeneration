@@ -23,11 +23,13 @@ public class Road
         return Start + rotation * direction * length;
     }
 
-    public void Draw()
+    public void Draw(Transform transform)
     {
         GameObject line = new GameObject();
+        line.transform.SetParent(transform);
         line.AddComponent<LineRenderer>();
         LineRenderer l = line.GetComponent<LineRenderer>();
+
         l.startColor = Color.black;
         l.endColor = Color.black;
         l.startWidth = 1f;
