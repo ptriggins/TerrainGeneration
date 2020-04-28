@@ -20,7 +20,7 @@ public class MeshData
         UVs = new List<Vector2>(width * length);
     }
 
-    public void SetData(float[,] values)
+    public void Generate(float[,] values)
     {
         Vertices.Clear();
         Triangles.Clear();

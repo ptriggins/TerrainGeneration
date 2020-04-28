@@ -2,20 +2,14 @@
 using System.Collections.Generic;
 using AccidentalNoise;
 
-public class TerrainGenerator : MonoBehaviour
+public class Generator : MonoBehaviour
 {
 
-    [Header("Map Size")]
+    [Header("Size")]
     [SerializeField]
     public int Width = 512;
     [SerializeField]
     public int Length = 512;
-
-    [Header("Noise")]
-    [SerializeField]
-    public int Octaves = 6;
-    [SerializeField]
-    public double Frequency = 1.25;
 
     private ImplicitFractal NoiseMap;
     public DensityMap DensityMap;
@@ -24,9 +18,7 @@ public class TerrainGenerator : MonoBehaviour
 
     void Instantiate()
     {
-        NoiseMap = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
-            Octaves, Frequency, Random.Range(0, int.MaxValue));
-        DensityMap = new DensityMap(Width, Length, CityTypes);
+        DensityMap = new DensityMap(Width, Length);
     }
 
     public void Generate()

@@ -12,41 +12,42 @@ public class DensityMap : MonoBehaviour
     [SerializeField]
     public DensityTypes Densities;
 
+    [Header("Noise")]
+    [SerializeField]
+    public int Octaves = 6;
+    [SerializeField]
+    public double Frequency = 1.25;
+
     public Tile[,] Tiles;
     public Color[] Colors;
+    public Texture2D Texture;
 
     public MapData MapData;
     public MeshData MeshData;
-    public Texture2D Texture;
+    private ImplicitFractal Noise;
 
     public void Initialize(int width, int length)
     {
         Width = width;
         Length = length;
-        MapData = new MapData(Width, Length);
-        MeshData = new MeshData(width, length, 16);
-
+        Instantiate();
     }
 
-    public void Instantiate(int width, int length)
+    public void Instantiate()
     {
-        Tiles = new Tile[width, length];
-        Colors = new Color[width * length];
+        Tiles = new Tile[Width, Length];
+        Colors = new Color[Width * Length];
         MapData = new MapData(Width, Length);
         MeshData = new MeshData(4, 4);
+        Noise = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
+            Octaves, Frequency, Random.Range(0, int.MaxValue));
     }
 
-    public void Initialize(int width, int length)
+    public void Generate()
     {
-        Width = width;
-        Length = length;
-        MapData = new MapData(Width, Length);
-        MeshData = new MeshData(width, length, 16);
+        MapData.Generate(Noise);
+        MeshData.Generate(MapData.Values);
 
-    }
-
-    public void SetMap()
-    {
         for (int z = 0; z < Length; z++)
         {
             for (int x = 0; x < Length; x++)
@@ -102,12 +103,8 @@ public class DensityMap : MonoBehaviour
                     }
 
                     if (max > 0)
-                    {
                         Colors[(int)maxPos.x + (int)maxPos.y * Length] = Color.black;
-                    }
-    
                 }
-
             }
         }
     }
@@ -123,5 +120,4 @@ public class DensityMap : MonoBehaviour
         }
         return 0;
     }
-
 }
