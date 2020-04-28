@@ -12,13 +12,13 @@ public class RoadNetwork : MonoBehaviour
     public float Thickness = 4;
 
     public Vector3 TopLeft;
+    public Tile[,] Tiles;
     public float[,] Values;
-    CityType[] Types;
 
-    public RoadNetwork(float[,] values, CityType[] types)
+    public void Initialize(Tile[,] tiles, float[,] values)
     {
+        Tiles = tiles;
         Values = values;
-        Types = types;
     }
 
     public void Generate(Vector3 start)
@@ -59,22 +59,12 @@ public class RoadNetwork : MonoBehaviour
                 queue.Enqueue(new Road(start, varients[i]));
         }
 
-        float val = Values[(int)start.x, (int)start.z];
-        CityType type = DensityMap.GetType(val);
+        DensityType type = Tiles[(int)start.x, (int)start.z].Type;
 
-        if (Random.Range(0, 1) < Type.Percentile / 2)
-        {
-            Quaternion lPerp = Quaternion.Euler(0, angle - 90, 0);
-            Vector2 leftBranch = start + (Vector2)(lPerp * Vector2.right) * 4;
-            queue.Enqueue(new Road(start, leftBranch));
-        }
-
-        if (Random.Range(0, 1) < Type.Percentile / 2)
-        {
-            Quaternion rPerp = Quaternion.Euler(0, angle - 90, 0);
-            Vector2 rightBranch = start + (Vector2)(rPerp * Vector2.right) * 4;
-            queue.Enqueue(new Road(start, rightBranch));
-        }
+        if (Random.Range(0, 1) < type.Percentile / 2)
+            queue.Enqueue(new Road(start, current.GetExtension(90)));
+        if (Random.Range(0, 1) < type.Percentile / 2)
+            queue.Enqueue(new Road(start, current.GetExtension(90)));
 
     }
 

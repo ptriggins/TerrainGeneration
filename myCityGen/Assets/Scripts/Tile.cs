@@ -5,10 +5,9 @@ public class Tile
     public DensityType Type;
     public Color Color;
 
-    public Tile(DensityType type, Color color)
+    public Tile(DensityType type)
     {
         Type = type;
-        Color = color;
+        Color = type.Color;
     }
-
 }

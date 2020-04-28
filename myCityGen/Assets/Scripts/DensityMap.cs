@@ -91,9 +91,7 @@ public class DensityMap : MonoBehaviour
 
                         DensityType type = Densities.GetType(T);
                         Colors[x1 + z1 * Length] = type.Color;
-
-                        Tile tile = new Tile(current, type, color);
-                        Tiles[x1, z1] = tile;
+                        Tiles[x1, z1] = new Tile(type);
                     }
 
                     if (max > 0)
