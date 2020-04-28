@@ -10,34 +10,25 @@ public class RoadNetwork : MonoBehaviour
     [SerializeField]
     public float Thickness = 4;
 
-    public Vector3 TopLeft;
-    public Tile[,] Tiles;
-    public float[,] Values;
+    Vector3 Start;
     public List<Road> Accepted;
+    public Tile[,] Tiles;
 
-    private Transform Transform;
-
-    public void Initialize(Tile[,] tiles, float[,] values, Vector3 topleft)
+    public void Initialize(Tile[,] tiles, Vector3 start)
     {
-        TopLeft = topleft;
+        Start = start;
         Tiles = tiles;
-        Values = values;
-    }
-
-    public void Instantiate()
-    {
         Accepted = new List<Road>();
     }
 
-    public void Generate(Vector3 start)
+    public void Generate(Vector3 startPos)
     {
-        Vector3 firstStart = TopLeft + start;
-        Vector2 random = Random.insideUnitCircle.normalized;
-        Vector3 direction = new Vector3(random.x, 0, random.y);
-        Vector3 firstEnd = start + direction * Length;
+        Vector2 randDir = Random.insideUnitCircle.normalized;
+        Vector3 direction = new Vector3(randDir.x, 0, randDir.y);
+        Vector3 end = Start + direction * Length;
 
         Queue<Road> candidates = new Queue<Road>();
-        candidates.Enqueue(new Road(firstStart, firstEnd));
+        candidates.Enqueue(new Road(Start, end));
 
         int i = 0;
         int limit = 10;
@@ -62,9 +53,9 @@ public class RoadNetwork : MonoBehaviour
         variants[2] = current.GetExtension(20, Length);
 
         float[] values = new float[3];
-        values[0] = Values[(int)variants[0].x, (int)variants[0].z];
-        values[1] = Values[(int)variants[1].x, (int)variants[1].z];
-        values[2] = Values[(int)variants[2].x, (int)variants[2].z];
+        values[0] = Tiles[(int)variants[0].x, (int)variants[0].z].Value;
+        values[1] = Tiles[(int)variants[1].x, (int)variants[1].z].Value;
+        values[2] = Tiles[(int)variants[2].x, (int)variants[2].z].Value;
 
         for (int i = 0; i < 3; i++)
         {
@@ -82,9 +73,10 @@ public class RoadNetwork : MonoBehaviour
 
     public void Draw()
     {
+        Transform Transform = (Transform)gameObject.GetComponent(typeof(Transform));
         for (int i = 0; i < Accepted.Count; i++)
         {
-
+            Road.Draw(Transform);
         }
     }
 }

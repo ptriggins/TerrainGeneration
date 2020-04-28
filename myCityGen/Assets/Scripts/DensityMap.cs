@@ -21,6 +21,7 @@ public class DensityMap : MonoBehaviour
     public Tile[,] Tiles;
     public Color[] Colors;
     public Texture2D Texture;
+    private Display Display;
 
     public MapData MapData;
     public MeshData MeshData;
@@ -30,6 +31,7 @@ public class DensityMap : MonoBehaviour
     {
         Width = width;
         Length = length;
+        Display = (Display)FindObjectOfType(typeof(Display));
         Instantiate();
     }
 
@@ -45,8 +47,8 @@ public class DensityMap : MonoBehaviour
 
     public void Generate()
     {
-        MapData.Generate(Noise);
-        MeshData.Generate(MapData.Values);
+        MapData.Calculate(Noise);
+        MeshData.Calculate(MapData.Values);
 
         for (int z = 0; z < Length; z++)
         {
@@ -99,7 +101,7 @@ public class DensityMap : MonoBehaviour
 
                         DensityType type = Densities.GetType(T);
                         Colors[x1 + z1 * Length] = type.Color;
-                        Tiles[x1, z1] = new Tile(type);
+                        Tiles[x1, z1] = new Tile(type, val);
                     }
 
                     if (max > 0)
@@ -107,17 +109,24 @@ public class DensityMap : MonoBehaviour
                 }
             }
         }
+        Texture = TextureGenerator.GetDensityTexture(Width, Length, Colors);
+
+        int CheckAndPush(int x, int z, int t, Stack<Vector2> stack)
+        {
+            float value = MapData.Values[x, z];
+            if (Densities.GetIndex(value) == t)
+            {
+                if (Tiles[x, z] == null)
+                    stack.Push(new Vector2(x, z));
+                return 1;
+            }
+            return 0;
+        }
     }
 
-    private int CheckAndPush(int x, int z, int t, Stack<Vector2> stack)
+    public void Draw()
     {
-        float value = MapData.Values[x, z];
-        if (Densities.GetIndex(value) == t)
-        {
-            if (Tiles[x, z] == null)
-                stack.Push(new Vector2(x, z));
-            return 1;
-        }
-        return 0;
-    }
+        MeshData.RefreshMesh(Display.Mesh);
+        Display.Draw(Texture);
+    }   
 }

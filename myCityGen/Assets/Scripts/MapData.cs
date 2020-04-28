@@ -6,16 +6,17 @@ public class MapData
     public float[,] Values;
     public float Min;
     public float Max;
-    public Vector2 MaxPos;
+    public Vector3 MaxPos;
 
     public MapData(int width, int length)
     {
         Values = new float[width, length];
         Min = float.MaxValue;
         Max = float.MinValue;
+        MaxPos = new Vector3(0, 0, 0);
     }
 
-    public void Generate(ImplicitModuleBase module)
+    public void Calculate(ImplicitModuleBase module)
     {
         int width = Values.GetLength(0);
         int length = Values.GetLength(1);
@@ -32,10 +33,11 @@ public class MapData
                 if (value > Max)
                 {
                     Max = value;
-                    MaxPos = new Vector2(x, z);
+                    MaxPos.x = x1;
+                    MaxPos.z = z1;
                 }
-                if (value < Min) Min = value;
-
+                if (value < Min)
+                    Min = value;         
             }
         }
 

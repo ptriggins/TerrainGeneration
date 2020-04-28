@@ -28,14 +28,13 @@ public class Road
         GameObject line = new GameObject();
         line.transform.SetParent(transform);
         line.AddComponent<LineRenderer>();
-        LineRenderer l = line.GetComponent<LineRenderer>();
 
+        LineRenderer l = line.GetComponent<LineRenderer>();
         l.startColor = Color.black;
         l.endColor = Color.black;
         l.startWidth = 1f;
         l.endWidth = 1f;
         l.SetPosition(0, Start);
         l.SetPosition(1, End);
-    }
-
+   `}
 }

@@ -5,9 +5,9 @@ using UnityEngine;
 public class MeshData
 {
     private int Width, Length;
-    public List<Vector3> Vertices;
-    public List<int> Triangles;
-    public List<Vector2> UVs;
+    private List<Vector3> Vertices;
+    private List<int> Triangles;
+    private List<Vector2> UVs;
 
     public MeshData(int width, int length)
     {
@@ -20,7 +20,7 @@ public class MeshData
         UVs = new List<Vector2>(width * length);
     }
 
-    public void Generate(float[,] values)
+    public void Calculate(float[,] values)
     {
         Vertices.Clear();
         Triangles.Clear();
@@ -55,5 +55,13 @@ public class MeshData
         Triangles.Add(i);
         Triangles.Add(i + Width + 1);
         Triangles.Add(i + Width);
+    }
+
+    public void RefreshMesh(Mesh mesh)
+    {
+        mesh.Clear();
+        mesh.SetVertices(Vertices);
+        mesh.SetTriangles(Triangles, 0);
+        mesh.SetUVs(0, UVs);
     }
 }

@@ -8,12 +8,10 @@ public class Display : MonoBehaviour
     public MeshRenderer MeshRenderer;
     public Mesh Mesh;
 
-    public void SetMesh(MeshData data)
+    public void Instantiate()
     {
-        Mesh.Clear();
-        Mesh.SetVertices(data.Vertices);
-        Mesh.SetTriangles(data.Triangles, 0);
-        Mesh.SetUVs(0, data.UVs);
+        Mesh = new Mesh();
+        MeshFilter.mesh = Mesh;
     }
 
     public void Draw(Texture2D texture)
