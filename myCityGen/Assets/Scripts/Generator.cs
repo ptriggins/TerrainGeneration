@@ -23,8 +23,8 @@ public class Generator : MonoBehaviour
         DensityMap.Generate();
         DensityMap.Draw();
 
-        Vector3 topleft = new Vector3((Width - 1) / -2f, 0, (Length - 1) / 2f);
-        RoadNetwork.Initialize(DensityMap.Tiles, topleft);
+        Debug.Log(DensityMap.MapData.MaxPosition);
+        RoadNetwork.Initialize(DensityMap.MapData.MaxPosition, DensityMap.Tiles);
         RoadNetwork.Generate();
         RoadNetwork.Draw();
     }

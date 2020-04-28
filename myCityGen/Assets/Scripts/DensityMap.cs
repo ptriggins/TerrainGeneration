@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using AccidentalNoise;
 
+[System.Serializable]
+public struct DensityType
+{
+    public string Name;
+    public float Percentile;
+    public Color Color;
+}
+
 public class DensityMap : MonoBehaviour
 {
-    public int Width;
-    public int Length;
+    private int Width;
+    private int Length;
 
     [Header("Density Types")]
     [SerializeField]
-    public DensityTypes Densities;
+    public DensityType[] Types;
 
     [Header("Noise")]
     [SerializeField]
@@ -19,8 +27,8 @@ public class DensityMap : MonoBehaviour
     public double Frequency = 1.25;
 
     public Tile[,] Tiles;
-    public Color[] Colors;
-    public Texture2D Texture;
+    private Color[] Colors;
+    private Texture2D Texture;
     private Display Display;
 
     public MapData MapData;
@@ -62,7 +70,7 @@ public class DensityMap : MonoBehaviour
                     float max = float.MinValue;
                     Vector2 maxPos = new Vector2();
 
-                    int T = Densities.GetIndex(MapData.Values[x, z]);
+                    int T = GetTypeIndex(MapData.Values[x, z]);
 
                     while (stack.Count > 0)
                     {
@@ -99,7 +107,7 @@ public class DensityMap : MonoBehaviour
                             maxPos.x = x1; maxPos.y = z1;
                         }
 
-                        DensityType type = Densities.GetType(T);
+                        DensityType type = Types[GetTypeIndex(val)];
                         Colors[x1 + z1 * Length] = type.Color;
                         Tiles[x1, z1] = new Tile(type, val);
                     }
@@ -114,7 +122,7 @@ public class DensityMap : MonoBehaviour
         int CheckAndPush(int x, int z, int t, Stack<Vector2> stack)
         {
             float value = MapData.Values[x, z];
-            if (Densities.GetIndex(value) == t)
+            if (GetTypeIndex(value) == t)
             {
                 if (Tiles[x, z] == null)
                     stack.Push(new Vector2(x, z));
@@ -122,11 +130,21 @@ public class DensityMap : MonoBehaviour
             }
             return 0;
         }
+
+        int GetTypeIndex(float val)
+        {
+            for (int i = 0; i < Types.Length; i++)
+            {
+                if (val <= Types[i].Percentile)
+                    return i;
+            }
+            return -1;
+        }
     }
 
     public void Draw()
     {
         MeshData.RefreshMesh(Display.Mesh);
         Display.Draw(Texture);
-    }   
+    }
 }

@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c95d2ea5e57e44cb13f3364762ab96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Start: {x: 0, y: 0}
-  Destinations: {x: 0, y: 0}
+  Length: 4
+  Thickness: 4
 --- !u!4 &871327847
 Transform:
   m_ObjectHideFlags: 0
@@ -195,26 +195,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 362938cdda578414daeca2be865ad6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Width: 1024
-  Length: 1024
-  Octaves: 20
-  Frequency: 1
-  CityTypes:
-  - Name: Resort
-    Percentile: 0.1
-    Color: {r: 0.013616939, g: 0.3207547, b: 0.046993528, a: 0}
-  - Name: Village
-    Percentile: 0.4
-    Color: {r: 0.56817377, g: 0.9056604, b: 0.625152, a: 0}
-  - Name: Town
-    Percentile: 0.7
-    Color: {r: 0.9339623, g: 0.85693985, b: 0.48900855, a: 0}
-  - Name: City
-    Percentile: 0.9
-    Color: {r: 1, g: 0.7146775, b: 0.2783019, a: 0}
-  - Name: Metropolis
-    Percentile: 1
-    Color: {r: 1, g: 0.25581396, b: 0, a: 0}
+  Width: 512
+  Length: 512
 --- !u!4 &964032408
 Transform:
   m_ObjectHideFlags: 0
@@ -336,6 +318,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1867868195}
+  - component: {fileID: 1867868196}
   m_Layer: 0
   m_Name: Density Map
   m_TagString: Untagged
@@ -350,13 +333,43 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1867868194}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -338.50125, y: -206.71149, z: 232.12448}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 964032408}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1867868196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1867868194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9df9d1915c181540b6d6d04fa7f9a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Types:
+  - Name: Wilderness
+    Percentile: 0.1
+    Color: {r: 0.38059238, g: 0.5377358, b: 0.372864, a: 0}
+  - Name: Rural
+    Percentile: 0.5
+    Color: {r: 0.904895, g: 1, b: 0.7877358, a: 0}
+  - Name: Suburban
+    Percentile: 0.7
+    Color: {r: 1, g: 0.96556705, b: 0.6839622, a: 0}
+  - Name: Urban
+    Percentile: 0.9
+    Color: {r: 1, g: 0.7581109, b: 0.48584908, a: 0}
+  - Name: Metropolis
+    Percentile: 1
+    Color: {r: 0.9339623, g: 0.56509626, b: 0.47138664, a: 0}
+  Octaves: 6
+  Frequency: 1.25
 --- !u!43 &2074625897
 Mesh:
   m_ObjectHideFlags: 0

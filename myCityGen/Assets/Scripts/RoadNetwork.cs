@@ -11,17 +11,17 @@ public class RoadNetwork : MonoBehaviour
     public float Thickness = 4;
 
     Vector3 Start;
-    public List<Road> Accepted;
     public Tile[,] Tiles;
+    public List<Road> Roads;
 
-    public void Initialize(Tile[,] tiles, Vector3 start)
+    public void Initialize(Vector3 start, Tile[,] tiles)
     {
         Start = start;
         Tiles = tiles;
-        Accepted = new List<Road>();
+        Roads = new List<Road>();
     }
 
-    public void Generate(Vector3 startPos)
+    public void Generate()
     {
         Vector2 randDir = Random.insideUnitCircle.normalized;
         Vector3 direction = new Vector3(randDir.x, 0, randDir.y);
@@ -36,11 +36,10 @@ public class RoadNetwork : MonoBehaviour
         while (candidates.Count > 0 && i < limit)
         {
             Road current = candidates.Dequeue();
-            Accepted.Add(current);
+            Roads.Add(current);
             GetCandidates(current, candidates);
             i++;
-        }
-        
+        }       
     }
 
     public void GetCandidates(Road current, Queue<Road> queue)
@@ -51,7 +50,8 @@ public class RoadNetwork : MonoBehaviour
         variants[0] = current.GetExtension(-20, Length);
         variants[1] = current.GetExtension(0, Length);
         variants[2] = current.GetExtension(20, Length);
-
+        //Debug.Log(variants[0] + ", " + variants[1] + ", " + variants[2]);
+       
         float[] values = new float[3];
         values[0] = Tiles[(int)variants[0].x, (int)variants[0].z].Value;
         values[1] = Tiles[(int)variants[1].x, (int)variants[1].z].Value;
@@ -74,9 +74,9 @@ public class RoadNetwork : MonoBehaviour
     public void Draw()
     {
         Transform Transform = (Transform)gameObject.GetComponent(typeof(Transform));
-        for (int i = 0; i < Accepted.Count; i++)
+        for (int i = 0; i < Roads.Count; i++)
         {
-            Road.Draw(Transform);
+            Roads[i].Draw(Transform);
         }
     }
 }
