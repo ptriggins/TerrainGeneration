@@ -152,6 +152,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Length: 4
   Thickness: 4
+  Lines:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &871327847
 Transform:
   m_ObjectHideFlags: 0
@@ -195,8 +206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 362938cdda578414daeca2be865ad6a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Width: 512
-  Length: 512
+  Width: 1024
+  Length: 1024
 --- !u!4 &964032408
 Transform:
   m_ObjectHideFlags: 0

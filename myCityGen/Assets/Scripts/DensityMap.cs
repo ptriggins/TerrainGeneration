@@ -55,6 +55,9 @@ public class DensityMap : MonoBehaviour
 
     public void Generate()
     {
+        Noise = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
+            Octaves, Frequency, Random.Range(0, int.MaxValue));
+
         MapData.Calculate(Noise);
         MeshData.Calculate(MapData.Values);
 

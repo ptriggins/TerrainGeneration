@@ -23,7 +23,7 @@ public class Road
         return Start + rotation * direction * length;
     }
 
-    public void Draw(Transform transform)
+    public GameObject Draw(Transform transform)
     {
         GameObject line = new GameObject();
         line.transform.SetParent(transform);
@@ -36,5 +36,7 @@ public class Road
         l.endWidth = 1f;
         l.SetPosition(0, Start);
         l.SetPosition(1, End);
+
+        return line;
     }
 }

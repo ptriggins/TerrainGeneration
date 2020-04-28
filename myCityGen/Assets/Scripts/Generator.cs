@@ -23,9 +23,11 @@ public class Generator : MonoBehaviour
         DensityMap.Generate();
         DensityMap.Draw();
 
-        Debug.Log(DensityMap.MapData.MaxPosition);
-        RoadNetwork.Initialize(DensityMap.MapData.MaxPosition, DensityMap.Tiles);
-        RoadNetwork.Generate();
+        if (RoadNetwork.Lines != null)
+            RoadNetwork.Clear();
+
+        RoadNetwork.Instantiate();
+        RoadNetwork.Generate(DensityMap.MapData.MaxPosition, DensityMap.Tiles);
         RoadNetwork.Draw();
     }
 }

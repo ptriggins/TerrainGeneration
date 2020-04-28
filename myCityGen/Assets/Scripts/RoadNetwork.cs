@@ -10,25 +10,23 @@ public class RoadNetwork : MonoBehaviour
     [SerializeField]
     public float Thickness = 4;
 
-    Vector3 Start;
-    public Tile[,] Tiles;
     public List<Road> Roads;
+    public List<GameObject> Lines;
 
-    public void Initialize(Vector3 start, Tile[,] tiles)
+    public void Instantiate()
     {
-        Start = start;
-        Tiles = tiles;
         Roads = new List<Road>();
+        Lines = new List<GameObject>();
     }
 
-    public void Generate()
+    public void Generate(Vector3 start, Tile[,] tiles)
     {
         Vector2 randDir = Random.insideUnitCircle.normalized;
         Vector3 direction = new Vector3(randDir.x, 0, randDir.y);
-        Vector3 end = Start + direction * Length;
+        Vector3 end = start + direction * Length;
 
         Queue<Road> candidates = new Queue<Road>();
-        candidates.Enqueue(new Road(Start, end));
+        candidates.Enqueue(new Road(start, end));
 
         int i = 0;
         int limit = 10;
@@ -37,12 +35,12 @@ public class RoadNetwork : MonoBehaviour
         {
             Road current = candidates.Dequeue();
             Roads.Add(current);
-            GetCandidates(current, candidates);
+            GetCandidates(current, candidates, tiles);
             i++;
         }       
     }
 
-    public void GetCandidates(Road current, Queue<Road> queue)
+    public void GetCandidates(Road current, Queue<Road> queue, Tile[,] tiles)
     {
         Vector3 start = current.End;
 
@@ -53,9 +51,9 @@ public class RoadNetwork : MonoBehaviour
         //Debug.Log(variants[0] + ", " + variants[1] + ", " + variants[2]);
        
         float[] values = new float[3];
-        values[0] = Tiles[(int)variants[0].x, (int)variants[0].z].Value;
-        values[1] = Tiles[(int)variants[1].x, (int)variants[1].z].Value;
-        values[2] = Tiles[(int)variants[2].x, (int)variants[2].z].Value;
+        values[0] = tiles[(int)variants[0].x, (int)variants[0].z].Value;
+        values[1] = tiles[(int)variants[1].x, (int)variants[1].z].Value;
+        values[2] = tiles[(int)variants[2].x, (int)variants[2].z].Value;
 
         for (int i = 0; i < 3; i++)
         {
@@ -63,7 +61,7 @@ public class RoadNetwork : MonoBehaviour
                 queue.Enqueue(new Road(start, variants[i]));
         }
 
-        DensityType type = Tiles[(int)start.x, (int)start.z].Type;
+        DensityType type = tiles[(int)start.x, (int)start.z].Type;
   
         if (Random.Range(0, 1) < type.Percentile / 2)
             queue.Enqueue(new Road(start, current.GetExtension(90, Length)));
@@ -76,7 +74,15 @@ public class RoadNetwork : MonoBehaviour
         Transform Transform = (Transform)gameObject.GetComponent(typeof(Transform));
         for (int i = 0; i < Roads.Count; i++)
         {
-            Roads[i].Draw(Transform);
+            Lines.Add(Roads[i].Draw(Transform));
+        }
+    }
+
+    public void Clear()
+    {
+        for (int i = 0; i < Lines.Count; i++)
+        {
+            DestroyImmediate(Lines[i]);
         }
     }
 }
