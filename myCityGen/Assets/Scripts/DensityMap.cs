@@ -10,7 +10,7 @@ public class DensityMap : MonoBehaviour
 
     [Header("Density Types")]
     [SerializeField]
-    public List<CityType> CityTypes;
+    public DensityTypes Types;
 
     public Tile[,] Tiles;
     public Color[] Colors;
@@ -21,11 +21,17 @@ public class DensityMap : MonoBehaviour
     public MeshData MeshData;
     public Texture2D Texture;
 
-    public DensityMap(int width, int length, List<CityType> cityTypes)
+    public void Instantiate(int width, int length)
+    {
+        Tiles = new Tile[width, length];
+        Colors = new Color[width * length];
+        Zones = new List<Zone>[Types.Count];
+    }
+
+    public DensityMap(int width, int length)
     {
         Width = width;
         Length = length;
-        CityTypes = cityTypes;
 
         Tiles = new Tile[width, length];
         Colors = new Color[width * length];
@@ -150,23 +156,6 @@ public class DensityMap : MonoBehaviour
 
             }
         }
-    }
-
-    public int GetTypeIndex(float val)
-    {
-        for (int i = 0; i < CityTypes.Count; i++)
-        {
-            if (val < CityTypes[i].Percentile)
-            {
-                return i;
-            }
-        }
-        return CityTypes.Count - 1;
-    }
-
-    public CityType GetType(float val)
-    {
-        return CityTypes[GetTypeIndex(val)];
     }
 
 }

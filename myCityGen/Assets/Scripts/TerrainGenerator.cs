@@ -2,15 +2,6 @@
 using System.Collections.Generic;
 using AccidentalNoise;
 
-[System.Serializable]
-public struct CityType
-{
-    public string Name;
-    public float Percentile;
-    public Color Color;
-
-}
-
 public class TerrainGenerator : MonoBehaviour
 {
 
@@ -25,10 +16,6 @@ public class TerrainGenerator : MonoBehaviour
     public int Octaves = 6;
     [SerializeField]
     public double Frequency = 1.25;
-
-    [Header("Density Types")]
-    [SerializeField]
-    public List<CityType> CityTypes;
 
     private ImplicitFractal NoiseMap;
     public DensityMap DensityMap;

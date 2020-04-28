@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class RoadNetwork
+public class RoadNetwork : MonoBehaviour
 {
     [Header("Road Size")]
     [SerializeField]
@@ -18,6 +18,7 @@ public class RoadNetwork
     public RoadNetwork(float[,] values, CityType[] types)
     {
         Values = values;
+        Types = types;
     }
 
     public void Generate(Vector3 start)
