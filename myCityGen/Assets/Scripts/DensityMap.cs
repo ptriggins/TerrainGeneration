@@ -10,11 +10,10 @@ public class DensityMap : MonoBehaviour
 
     [Header("Density Types")]
     [SerializeField]
-    public DensityTypes Types;
+    public DensityTypes Densities;
 
     public Tile[,] Tiles;
     public Color[] Colors;
-    public List<Zone>[] Zones;
     public List<PopCenter> PopCenters;
 
     public MapData MapData;
@@ -25,7 +24,6 @@ public class DensityMap : MonoBehaviour
     {
         Tiles = new Tile[width, length];
         Colors = new Color[width * length];
-        Zones = new List<Zone>[Types.Count];
     }
 
     public DensityMap(int width, int length)
@@ -33,15 +31,7 @@ public class DensityMap : MonoBehaviour
         Width = width;
         Length = length;
 
-        Tiles = new Tile[width, length];
-        Colors = new Color[width * length];
-        Zones = new List<Zone>[cityTypes.Count];
         PopCenters = new List<PopCenter>();
-
-        for (int i = 0; i < cityTypes.Count; i++)
-        {
-            Zones[i] = new List<Zone>();
-        }
 
         MapData = new MapData(Width, Length);
         MeshData = new MeshData(width, length, 16);
@@ -50,36 +40,34 @@ public class DensityMap : MonoBehaviour
 
     public void SetMap()
     {
+        float[,] values = MapData.Values;
         for (int z = 0; z < Length; z++)
         {
             for (int x = 0; x < Length; x++)
             {
                 if (Tiles[x, z] == null)
                 {
-                    Zone zone = new Zone();
-                    int T = GetTypeIndex(MapData.Values[x, z]);
-                    zone.Type = CityTypes[T];
-
                     Stack<Vector2> stack = new Stack<Vector2>();
                     stack.Push(new Vector2(x, z));
 
                     float max = float.MinValue;
                     Vector2 maxPos = new Vector2();
 
+                    int T = Densities.GetIndex(values[x, z]);
+
                     while (stack.Count > 0)
                     {
                         Vector2 current = stack.Pop();
                         int x1 = (int)current.x;
                         int z1 = (int)current.y;
-
-                        float val = MapData.Values[x1, z1];
-                        float leftVal = 0, rightVal = 0, topVal = 0, bottomVal = 0;
+                        float val = values[x1, z1];
+                        float left = 0, right = 0, top = 0, bottom = 0;
 
                         int count = 0;
                         if (x1 > 0)
                         {
-                            leftVal = MapData.Values[x1 - 1, z1];
-                            if (GetTypeIndex(leftVal) == T)
+                            left = values[x1 - 1, z1];
+                            if (Densities.GetIndex(left) == T)
                             {
                                 count++;
                                 if (Tiles[x1 - 1, z1] == null)
@@ -91,8 +79,8 @@ public class DensityMap : MonoBehaviour
 
                         if (x1 < Width - 1)
                         {
-                            rightVal = MapData.Values[x1 + 1, z1];
-                            if (GetTypeIndex(rightVal) == T)
+                            right = MapData.Values[x1 + 1, z1];
+                            if (Densities.GetIndex(right) == T)
                             {
                                 count++;
                                 if (Tiles[x1 + 1, z1] == null)
@@ -104,8 +92,8 @@ public class DensityMap : MonoBehaviour
 
                         if (z1 > 0)
                         {
-                            topVal = MapData.Values[x1, z1 - 1];
-                            if (GetTypeIndex(topVal) == T)
+                            top = MapData.Values[x1, z1 - 1];
+                            if (Densities.GetIndex(top) == T)
                             {
                                 count++;
                                 if (Tiles[x1, z1 - 1] == null)
@@ -117,7 +105,7 @@ public class DensityMap : MonoBehaviour
 
                         if (z1 < Length - 1)
                         {
-                            bottomVal = MapData.Values[x1, z1 + 1];
+                            bottom = MapData.Values[x1, z1 + 1];
                             if (GetTypeIndex(bottomVal) == T)
                             {
                                 count++;
@@ -142,7 +130,6 @@ public class DensityMap : MonoBehaviour
                         Colors[x1 + z1 * Length] = color;
 
                         Tile tile = new Tile(current, type, color);
-                        zone.Tiles.Add(tile);
                         Tiles[x1, z1] = tile;
                     }
 
@@ -150,8 +137,7 @@ public class DensityMap : MonoBehaviour
                     {
                         Colors[(int)maxPos.x + (int)maxPos.y * Length] = Color.black;
                     }
-
-                    Zones[T].Add(zone);     
+    
                 }
 
             }
