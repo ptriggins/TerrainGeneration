@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using AccidentalNoise;
 
-public class DensityMap
+public class DensityMap : MonoBehaviour
 {
     public int Width;
     public int Length;
+
+    [Header("Density Types")]
+    [SerializeField]
     public List<CityType> CityTypes;
 
     public Tile[,] Tiles;

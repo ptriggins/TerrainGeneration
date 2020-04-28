@@ -6,6 +6,7 @@ public class MapData
     public float[,] Values;
     public float Min;
     public float Max;
+    public Vector2 MaxPos;
 
     public MapData(int width, int length)
     {
@@ -28,8 +29,13 @@ public class MapData
                 float value = (float)module.Get(x1, z1);
                 Values[x, z] = value;
 
-                if (value > Max) Max = value;
+                if (value > Max)
+                {
+                    Max = value;
+                    MaxPos = new Vector2(x, z);
+                }
                 if (value < Min) Min = value;
+
             }
         }
 
@@ -37,14 +43,8 @@ public class MapData
         {
             for (int z = 0; z < length; z++)
             {
-                Values[x, z] = GetVal(x, z);
+                Values[x, z] = (Values[x, z] - Min) / (Max - Min);
             }
         }
-    }
-
-    public float GetVal(int x, int z)
-    {
-        float val = Values[x, z];
-        return (val - Min) / (Max - Min);
     }
 }

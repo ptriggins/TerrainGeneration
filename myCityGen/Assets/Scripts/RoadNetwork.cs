@@ -1,83 +1,79 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class RoadNetwork : MonoBehaviour
+public class RoadNetwork
 {
-    public Vector2 Start;
-    public Vector2 Destinations;
-    public DensityMap DensityMap;
+    [Header("Road Size")]
+    [SerializeField]
+    public float Length = 4;
+    [SerializeField]
+    public float Thickness = 4;
 
-    public RoadNetwork(DensityMap densityMap)
+    public Vector3 TopLeft;
+    public float[,] Values;
+    CityType[] Types;
+
+    public RoadNetwork(float[,] values, CityType[] types)
     {
-        DensityMap = densityMap;
+        Values = values;
     }
 
-    public void GenerateRoads()
+    public void Generate(Vector3 start)
     {
         Queue<Road> candidates = new Queue<Road>();
-        List<Road> accepted = new List<Road>();
-        potential.Enqueue(new Road());
+        candidates.Enqueue(new Road(start, start + Random.insideUnitCircle.normalized * 4));
 
         int i = 0;
-        int limit = 10000;
+        int limit = 10;
 
         while (i < limit && candidates.Count > 0)
         {
             Road current = candidates.Dequeue();
-            accepted.Add(current);
-
-            GetNextRoads
+            current.DrawRoad();
+            //GetNextRoads(current, candidateQueue);
             
         }
         i++;
     }
 
-    /*
-    public Road CheckCrossings(Road road)
+    public void GetCandidates(Road current, Queue<Road> queue)
     {
+        Vector3 start = current.End;
 
-    }
-    */
+        Vector3[] varients = new Vector3[3];
+        varients[0] = current.GetExtension(-20);
+        varients[1] = current.GetExtension(0);
+        varients[2] = current.GetExtension(20);
 
-    public Road GetNextRoads(Road current, Queue<Road> queue)
-    {
-        Vector2 start = current.End;
+        float[] values = new float[3];
+        values[0] = Values[(int)varients[0].x, (int)varients[0].z];
+        values[1] = Values[(int)varients[1].x, (int)varients[1].z];
+        values[2] = Values[(int)varients[2].x, (int)varients[2].z];
 
-        MapData mapdata = DensityMap.MapData;
+        for (int i = 0; i < 3; i++)
+        {
+            if (values[i] == values.Max())
+                queue.Enqueue(new Road(start, varients[i]));
+        }
 
-        Vector2 direction = (current.Start - current.End).normalized;
-        float angle = Vector2.Angle(Vector2.zero, direction);
-
-        Vector2 straight = start + direction * 4;
-        float valS = mapdata.GetVal((int)straight.x, (int)straight.y);
-
-        Quaternion lRotation = Quaternion.Euler(0, angle - 20, 0);
-        Vector2 slightLeft = start + (Vector2)(lRotation * Vector2.right) * 4;
-        float valL = mapdata.GetVal((int)slightLeft.x, (int)slightLeft.y);
-
-        Quaternion rRotation = Quaternion.Euler(0, angle + 20, 0);
-        Vector2 slightRight = start + (Vector2)(lRotation * Vector2.right) * 4;
-        float valR = mapdata.GetVal((int)slightRight.x, (int)slightRight.y);
-
-        if (valS > valL && valS > valR)
-            queue.Enqueue();
-        else if (valL > valS && valL > valR)
-            queue.Enqueue();
-        else
-            queue.Enqueue();
-
-        float val = mapdata.GetVal((int)start.x, (int)start.y);
-        CityType Type = DensityMap.GetType(val);
+        float val = Values[(int)start.x, (int)start.z];
+        CityType type = DensityMap.GetType(val);
 
         if (Random.Range(0, 1) < Type.Percentile / 2)
         {
-           Quaternion lPerp = Quaternion.Euler(0, angle - 90, 0);
-           Vector2 leftBranch = start + (Vector2)(lPerp * Vector2.right) * 4;
+            Quaternion lPerp = Quaternion.Euler(0, angle - 90, 0);
+            Vector2 leftBranch = start + (Vector2)(lPerp * Vector2.right) * 4;
+            queue.Enqueue(new Road(start, leftBranch));
         }
-        
 
-
+        if (Random.Range(0, 1) < Type.Percentile / 2)
+        {
+            Quaternion rPerp = Quaternion.Euler(0, angle - 90, 0);
+            Vector2 rightBranch = start + (Vector2)(rPerp * Vector2.right) * 4;
+            queue.Enqueue(new Road(start, rightBranch));
+        }
 
     }
 

@@ -32,7 +32,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private ImplicitFractal NoiseMap;
     public DensityMap DensityMap;
-    public RoadNetwork RoadNewtork;
+    private RoadNetwork RoadNetwork;
     private Display Display;
 
     void Instantiate()
@@ -56,6 +56,11 @@ public class TerrainGenerator : MonoBehaviour
         DensityMap.Texture = TextureGenerator.GetDensityTexture(Width, Length, DensityMap.Colors);
         Display.SetMesh(DensityMap.MeshData);
         Display.Draw(DensityMap.Texture);
+
+        RoadNetwork = (RoadNetwork)FindObjectOfType(typeof(RoadNetwork));
+        RoadNetwork.DensityMap = DensityMap;
+        RoadNetwork.GenerateRoads(DensityMap.topleft + DensityMap.MapData.MaxCoords);
+
     }
 
  

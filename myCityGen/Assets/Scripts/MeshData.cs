@@ -5,14 +5,19 @@ using UnityEngine;
 public class MeshData
 {
     private int Width, Length, Step;
+    public Vector3 TopCorner;
     public List<Vector3> Vertices;
     public List<int> Triangles;
     public List<Vector2> UVs;
 
     public MeshData(int width, int length, int step)
     {
-        Width = 4//width / step;
-        Length = 4//length / step;
+        Width = 4;//width / step;
+        Length = 4;//length / step;
+
+        float startX = (Width - 1) / -2f;
+        float startZ = (Length - 1) / 2f;
+        Vector3 TopLeft = new Vector3(startX, 0, startZ);
 
         int numQuads = (width - 1) * (length - 1);
         Vertices = new List<Vector3>(width * length);
@@ -25,10 +30,6 @@ public class MeshData
         Vertices.Clear();
         Triangles.Clear();
         UVs.Clear();
-
-        float startX = (Width - 1) / -2f;
-        float startZ = (Length - 1) / 2f;
-        Vector3 startPos = new Vector3(startX, 0, startZ);
 
         int i = 0;
         for (int z = 0; z < Length; z++)
