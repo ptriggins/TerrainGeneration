@@ -104,7 +104,13 @@ public class DensityMap : MonoBehaviour
             }
         }
 
-        Colors[700 + 700 * Length] = Color.blue;
+        for (int x = 0; x < 500; x++)
+        {
+            Colors[x] = Color.blue;
+        }
+        Colors[999999] = Color.blue;
+
+        //Colors[900 + 900 * Length] = Color.blue;
         /*
         for (int z = 0; z < Length - 10; z+= 10)
         {
