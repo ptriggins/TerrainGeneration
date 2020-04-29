@@ -14,9 +14,9 @@ public class MeshData
         Width = width / 100;
         Length = length / 100;
 
-        Vertices = new List<Vector3>((width + 1) * (length + 1));
-        Triangles = new List<int>(Width * Length * 6);
-        UVs = new List<Vector2>((width + 1) * (length + 1));
+        Vertices = new List<Vector3>(width * length);
+        Triangles = new List<int>((Width - 1) * (Length - 1) * 6);
+        UVs = new List<Vector2>(width * length);
     }
 
     public void Calculate(float[,] values)

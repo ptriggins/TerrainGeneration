@@ -30,31 +30,38 @@ public class RoadNetwork : MonoBehaviour
         candidates.Enqueue(new Road(start, end));
 
         int i = 0;
-        int limit = 100;
+        int limit = 5;
 
         while (candidates.Count > 0 && i < limit)
         {
             Road current = candidates.Dequeue();
             Roads.Add(current);
 
-            int t = CheckIntersections(current);
+            //int t = CheckIntersections(current);
+            //Debug.Log(t);
+            GetCandidates(current, candidates, tiles, true);
+            /*
             if (t == 0)
                 GetCandidates(current, candidates, tiles, true);
             else if (t == 1)
                 GetCandidates(current, candidates, tiles, false);
+            */
             i++;
         }
+        CheckIntersections(Roads[Roads.Count - 1]);
     }
 
     public int CheckIntersections(Road current)
     {
         List<Road> roads = new List<Road>();
+        current.Color = Color.blue;
         GetNextRoads(current, roads);
+        Debug.Log(current.Start);
 
         int level = 1;
-
         while (roads.Count > 0)
         {
+            //Debug.Log(Roads.Count);
             List<float> distances = new List<float>();
             for (int i = 0; i < roads.Count; i++)
             {
@@ -72,8 +79,19 @@ public class RoadNetwork : MonoBehaviour
                     return CreateIntersection(road);
                 GetNextRoads(road, nextRoads);
                 distances.Remove(distances[distances.IndexOf(min)]);
+
+                /*
+                if (level == 1)
+                    road.Color = Color.blue;
+                if (level == 2)
+                    road.Color = Color.green;
+                if (level == 3)
+                    road.Color = Color.red;
+                */
                 roads.Remove(road);
             }
+            roads = nextRoads;
+            //Debug.Log(level);
             level++;
         }
         return 0;
@@ -83,13 +101,17 @@ public class RoadNetwork : MonoBehaviour
             if (road.Next.Contains(road.Previous) || road.Previous == null)
                 for (int i = 0; i < road.Last.Count; i++)
                 {
+                    Debug.Log(road.Last[i].End);
                     list.Add(road.Last[i]);
+                    road.Last[i].Color = Color.red;
                     road.Last[i].Previous = road;
                 }
             else if (road.Last.Contains(road.Previous))
                 for (int i = 0; i < road.Next.Count; i++)
                 {
+                    Debug.Log("help1");
                     list.Add(road.Next[i]);
+                    road.Last[i].Color = Color.red;
                     road.Next[i].Previous = road;
                 }
         }
@@ -136,14 +158,16 @@ public class RoadNetwork : MonoBehaviour
     public void GetCandidates(Road current, Queue<Road> queue, Tile[,] tiles, bool branches)
     {
         Vector3[] variants = new Vector3[3];
-        variants[0] = current.GetExtension(-15, Length);
-        variants[1] = current.GetExtension(0, Length);
-        variants[2] = current.GetExtension(15, Length);
-
+        variants[0] = current.GetExtension(-15);
+        variants[1] = current.GetExtension(0);
+        variants[2] = current.GetExtension(15);
+        
+        /*
         Debug.Log((int)variants[0].x + ", " + (int)variants[0].z);
         Debug.Log((int)variants[1].x + ", " + (int)variants[1].z);
         Debug.Log((int)variants[2].x + ", " + (int)variants[2].z);
         Debug.Log("");
+        */
 
         float[] values = new float[3];
         values[0] = tiles[(int)variants[0].x, (int)variants[0].z].Value;
@@ -170,19 +194,20 @@ public class RoadNetwork : MonoBehaviour
 
             if (Random.Range(0, 1) < type.Percentile / 2)
             {
-                branch1 = new Road(current.End, current.GetExtension(90, Length));
+                branch1 = new Road(current.End, current.GetExtension(90));
                 straight.Last.Add(branch1);
                 current.Next.Add(branch1);
             }
             if (Random.Range(0, 1) < type.Percentile / 2)
             {
-                branch2 = new Road(current.End, current.GetExtension(-90, Length));
+                branch2 = new Road(current.End, current.GetExtension(-90));
                 straight.Last.Add(branch2);
                 current.Next.Add(branch2);
             }
 
             if (branch1 != null && branch2 != null)
             {
+                Debug.Log("Test");
                 branch1.Last.Add(branch2);
                 branch1.Last.Add(straight);
                 branch2.Last.Add(branch1);

@@ -8,7 +8,7 @@ public class Road
     public Vector3 Start;
     public Vector3 End;
     public float Angle;
-    public bool Visited = false;
+    public Color Color = Color.black;
 
     public List<Road> Next;
     public List<Road> Last;
@@ -24,7 +24,7 @@ public class Road
         Previous = null;
     }
 
-    public Vector3 GetExtension(float degrees, float length)
+    public Vector3 GetExtension(float degrees)
     {
         Quaternion rotation = Quaternion.Euler(0, degrees, 0);
         return End + rotation * (End - Start);
@@ -40,11 +40,8 @@ public class Road
         line.AddComponent<LineRenderer>();
 
         LineRenderer l = line.GetComponent<LineRenderer>();
-        Material road = Resources.Load("Road Material", typeof(Material)) as Material;
-        l.material = road;
-
-        l.startColor = Color.black;
-        l.endColor = Color.black;
+        l.material = new Material(Shader.Find("Unlit/Color"));
+        l.sharedMaterial.color = Color;
         l.startWidth = 1f;
         l.endWidth = 1f;
         l.SetPosition(0, 10 * Start);
