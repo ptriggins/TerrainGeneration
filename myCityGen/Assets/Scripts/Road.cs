@@ -5,25 +5,25 @@ using UnityEngine;
 
 public class Road
 {
-    public Vector3 Start;
-    public Vector3 End;
+    public Node Start;
+    public Node End;
     public float Angle;
     public Color Color = Color.black;
 
     public List<Road> Relations;
     public bool Visited = false;
 
-    public Road(Vector3 start, Vector3 end)
+    public Road(Node start, Node end)
     {
         Start = start;
         End = end;
         Relations = new List<Road>();
     }
 
-    public Vector3 Extend(float degrees)
+    public Node Extend(float degrees)
     {
         Quaternion rotation = Quaternion.Euler(0, degrees, 0);
-        return End + rotation * (End - Start);
+        return new Node(End.Position + rotation * (End.Position - Start.Position));
     }
 
     public GameObject Draw(Transform transform)
@@ -40,8 +40,8 @@ public class Road
         l.sharedMaterial.color = Color;
         l.startWidth = 1f;
         l.endWidth = 1f;
-        l.SetPosition(0, 10 * Start);
-        l.SetPosition(1, 10 * End);
+        l.SetPosition(0, 10 * Start.Position);
+        l.SetPosition(1, 10 * End.Position);
         //Debug.Log(Start + " : " + End);
 
         return line;
