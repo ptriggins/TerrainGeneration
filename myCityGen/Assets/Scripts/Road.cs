@@ -8,12 +8,21 @@ public class Road
     public Vector3 Start;
     public Vector3 End;
     public float Angle;
+    public bool Visited = false;
+
+    public List<Road> Next;
+    public List<Road> Last;
+    public Road Previous;
 
     public Road(Vector3 start, Vector3 end)
     {
         Start = start;
         End = end;
         Angle = Vector3.Angle(Vector3.right, end - start);
+
+        Next = new List<Road>();
+        Last = new List<Road>();
+        Previous = null;
     }
 
     public Vector3 GetExtension(float variation, float length)
