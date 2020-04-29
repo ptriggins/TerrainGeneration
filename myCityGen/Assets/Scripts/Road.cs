@@ -18,13 +18,12 @@ public class Road
     {
         Start = start;
         End = end;
-
         Next = new List<Road>();
         Last = new List<Road>();
         Previous = null;
     }
 
-    public Vector3 GetExtension(float degrees)
+    public Vector3 Extend(float degrees)
     {
         Quaternion rotation = Quaternion.Euler(0, degrees, 0);
         return End + rotation * (End - Start);
@@ -46,6 +45,7 @@ public class Road
         l.endWidth = 1f;
         l.SetPosition(0, 10 * Start);
         l.SetPosition(1, 10 * End);
+        Debug.Log(Start + " : " + End);
 
         return line;
     }

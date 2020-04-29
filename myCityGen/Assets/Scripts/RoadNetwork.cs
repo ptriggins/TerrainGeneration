@@ -30,16 +30,17 @@ public class RoadNetwork : MonoBehaviour
         candidates.Enqueue(new Road(start, end));
 
         int i = 0;
-        int limit = 5;
+        int limit = 2;
 
-        while (candidates.Count > 0 && i < limit)
+        while (candidates.Count > 0)
         {
             Road current = candidates.Dequeue();
             Roads.Add(current);
 
             //int t = CheckIntersections(current);
             //Debug.Log(t);
-            GetCandidates(current, candidates, tiles, true);
+
+            i += GetCandidates(current, candidates, tiles, true);
             /*
             if (t == 0)
                 GetCandidates(current, candidates, tiles, true);
@@ -101,7 +102,7 @@ public class RoadNetwork : MonoBehaviour
             if (road.Next.Contains(road.Previous) || road.Previous == null)
                 for (int i = 0; i < road.Last.Count; i++)
                 {
-                    Debug.Log(road.Last[i].End);
+                    //Debug.Log(road.Last[i].End);
                     list.Add(road.Last[i]);
                     road.Last[i].Color = Color.red;
                     road.Last[i].Previous = road;
@@ -155,78 +156,49 @@ public class RoadNetwork : MonoBehaviour
 
     }
 
-    public void GetCandidates(Road current, Queue<Road> queue, Tile[,] tiles, bool branches)
+    public int GetBranches(int num, Road current, Queue<Road> queue, Tile[,] tiles, bool perps)
     {
-        Vector3[] variants = new Vector3[3];
-        variants[0] = current.GetExtension(-15);
-        variants[1] = current.GetExtension(0);
-        variants[2] = current.GetExtension(15);
+        List<Road> pBranches = new List<Road>();
+        List<Road> aBranches = new List<Road>();
+        List<float> densities = new List<float>();
+
+        DensityType type = tiles[(int)current.End.x, (int)current.End.z].Type;
+
+        Vector3 start = current.End;
+        pBranches.Add(GetBranch(current, -15, 1));
+        pBranches.Add(GetBranch(current, 0, 1));
+        pBranches.Add(GetBranch(current, 15, 1));
         
-        /*
-        Debug.Log((int)variants[0].x + ", " + (int)variants[0].z);
-        Debug.Log((int)variants[1].x + ", " + (int)variants[1].z);
-        Debug.Log((int)variants[2].x + ", " + (int)variants[2].z);
-        Debug.Log("");
-        */
-
-        float[] values = new float[3];
-        values[0] = tiles[(int)variants[0].x, (int)variants[0].z].Value;
-        values[1] = tiles[(int)variants[1].x, (int)variants[1].z].Value;
-        values[2] = tiles[(int)variants[2].x, (int)variants[2].z].Value;
-
-        Road straight = null;
-        Road branch1 = null;
-        Road branch2 = null;
-
-        for (int i = 0; i < 3; i++)
+        if (perps == true)
         {
-            if (values[i] == values.Max())
-            {
-                straight = new Road(current.End, variants[i]);
-                straight.Last.Add(current);
-                current.Next.Add(straight);
-            }
+            pBranches.Add(GetBranch(current, -90, type.Percentile / 2));
+            pBranches.Add(GetBranch(current, -90, type.Percentile / 2));
         }
 
-        if (branches == true)
+        for (int i = 0; i < pBranches.Count; i++)
         {
-            DensityType type = tiles[(int)current.Start.x, (int)current.Start.z].Type;
-
-            if (Random.Range(0, 1) < type.Percentile / 2)
-            {
-                branch1 = new Road(current.End, current.GetExtension(90));
-                straight.Last.Add(branch1);
-                current.Next.Add(branch1);
-            }
-            if (Random.Range(0, 1) < type.Percentile / 2)
-            {
-                branch2 = new Road(current.End, current.GetExtension(-90));
-                straight.Last.Add(branch2);
-                current.Next.Add(branch2);
-            }
-
-            if (branch1 != null && branch2 != null)
-            {
-                Debug.Log("Test");
-                branch1.Last.Add(branch2);
-                branch1.Last.Add(straight);
-                branch2.Last.Add(branch1);
-                branch2.Last.Add(straight);
-                queue.Enqueue(branch1);
-                queue.Enqueue(branch2);
-            }
-            else if (branch1 == null)
-            {
-                branch2.Last.Add(straight);
-                queue.Enqueue(branch2);
-            }
-            else if (branch2 == null)
-            {
-                branch1.Last.Add(straight);
-                queue.Enqueue(branch2);
-            }
+            int x = (int)pBranches[i].End.x;
+            int z = (int)pBranches[i].End.z;
+            densities.Add(tiles[x, z].Value);
         }
-        queue.Enqueue(straight);
+
+        for (int i = 0; i < num; i++)
+        {
+            int minI = densities.IndexOf(densities.Min());
+            aBranches.Add(pBranches[minI]);
+            pBranches.Remove(pBranches[minI]);
+        }
+        
+
+           
+
+        Road GetBranch(Road road, float rotation, float probability)
+        {
+            if (Random.Range(0, 1) < probability)
+                return new Road(road.End, road.Extend(rotation));
+            else
+                return null;
+        }
     }
 
     public void Draw()
