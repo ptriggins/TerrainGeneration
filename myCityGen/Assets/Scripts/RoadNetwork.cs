@@ -21,10 +21,13 @@ public class RoadNetwork : MonoBehaviour
 
     public void Generate(Vector3 start, Tile[,] tiles)
     {
+        start.y += .1f;
         Vector2 randDir = Random.insideUnitCircle.normalized;
         Vector3 direction = new Vector3(randDir.x, 0, randDir.y);
         Vector3 end = start + direction * Length;
 
+        Roads.Add(new Road(start, end));
+        /*
         Queue<Road> candidates = new Queue<Road>();
         candidates.Enqueue(new Road(start, end));
 
@@ -37,7 +40,8 @@ public class RoadNetwork : MonoBehaviour
             Roads.Add(current);
             GetCandidates(current, candidates, tiles);
             i++;
-        }       
+        }
+        */
     }
 
     public void GetCandidates(Road current, Queue<Road> queue, Tile[,] tiles)

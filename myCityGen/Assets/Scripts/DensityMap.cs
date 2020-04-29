@@ -35,6 +35,8 @@ public class DensityMap : MonoBehaviour
     public MeshData MeshData;
     private ImplicitFractal Noise;
 
+    public Vector3 MaxPosition;
+
     public void Initialize(int width, int length)
     {
         Width = width;
@@ -48,30 +50,27 @@ public class DensityMap : MonoBehaviour
         Tiles = new Tile[Width, Length];
         Colors = new Color[Width * Length];
         MapData = new MapData(Width, Length);
-        MeshData = new MeshData(4, 4);
+        MeshData = new MeshData(Width, Length);
         Noise = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
             Octaves, Frequency, Random.Range(0, int.MaxValue));
+        MaxPosition = new Vector3(0, 0, 0);
     }
 
     public void Generate()
     {
-        Noise = new ImplicitFractal(FractalType.MULTI, BasisType.SIMPLEX, InterpolationType.QUINTIC,
-            Octaves, Frequency, Random.Range(0, int.MaxValue));
-
         MapData.Calculate(Noise);
         MeshData.Calculate(MapData.Values);
 
+        float max = float.MinValue;
+
         for (int z = 0; z < Length; z++)
         {
-            for (int x = 0; x < Length; x++)
+            for (int x = 0; x < Width; x++)
             {
                 if (Tiles[x, z] == null)
                 {
                     Stack<Vector2> stack = new Stack<Vector2>();
                     stack.Push(new Vector2(x, z));
-
-                    float max = float.MinValue;
-                    Vector2 maxPos = new Vector2();
 
                     int T = GetTypeIndex(MapData.Values[x, z]);
 
@@ -82,44 +81,45 @@ public class DensityMap : MonoBehaviour
                         int z1 = (int)current.y;
                         float val = MapData.Values[x1, z1];
 
-                        int n = 0;
-
                         if (x1 > 0)
-                            n += CheckAndPush(x1 - 1, z1, T, stack);
-                        else
-                            n++;
-
+                            CheckAndPush(x1 - 1, z1, T, stack);
                         if (x1 < Width - 1)
-                            n += CheckAndPush(x1 + 1, z1, T, stack);
-                        else
-                            n++;
-
+                            CheckAndPush(x1 + 1, z1, T, stack);
                         if (z1 > 0)
-                            n += CheckAndPush(x1, z1 - 1, T, stack);               
-                        else
-                            n++;
-
+                            CheckAndPush(x1, z1 - 1, T, stack);               
                         if (z1 < Length - 1)
-                            n += CheckAndPush(x1, z1 + 1, T, stack);
-                        else
-                            n++;
+                            CheckAndPush(x1, z1 + 1, T, stack);
 
-                        if (n == 4 && val > max)
+                        if (val > max)
                         {
                             max = val;
-                            maxPos.x = x1; maxPos.y = z1;
+                            MaxPosition = new Vector3(x1, 0, z1);
                         }
 
                         DensityType type = Types[GetTypeIndex(val)];
                         Colors[x1 + z1 * Length] = type.Color;
                         Tiles[x1, z1] = new Tile(type, val);
                     }
-
-                    if (max > 0)
-                        Colors[(int)maxPos.x + (int)maxPos.y * Length] = Color.black;
                 }
             }
         }
+
+        Colors[700 + 700 * Length] = Color.blue;
+        /*
+        for (int z = 0; z < Length - 10; z+= 10)
+        {
+            for (int x = 0; z < Width - 10; x+= 10)
+            {
+                if (z == Length - 2 || z == Width - 2)
+                    Colors[x + z * Length] = Color.blue;
+                else
+                    Colors[x + z * Length] = Color.black;
+            } 
+        }
+        */
+
+        Debug.Log(MaxPosition);
+        Colors[(int)MaxPosition.x + (int)MaxPosition.z * Length] = Color.blue;
         Texture = TextureGenerator.GetDensityTexture(Width, Length, Colors);
 
         int CheckAndPush(int x, int z, int t, Stack<Vector2> stack)

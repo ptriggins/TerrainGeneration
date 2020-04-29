@@ -11,13 +11,12 @@ public class MeshData
 
     public MeshData(int width, int length)
     {
-        Width = width;
-        Length = length;
+        Width = width / 100;
+        Length = length / 100;
 
-        int numQuads = (width - 1) * (length - 1);
-        Vertices = new List<Vector3>(width * length);
-        Triangles = new List<int>(numQuads * 6);
-        UVs = new List<Vector2>(width * length);
+        Vertices = new List<Vector3>((width + 1) * (length + 1));
+        Triangles = new List<int>(Width * Length * 6);
+        UVs = new List<Vector2>((width + 1) * (length + 1));
     }
 
     public void Calculate(float[,] values)
@@ -26,17 +25,15 @@ public class MeshData
         Triangles.Clear();
         UVs.Clear();
 
-        Vector3 topleft = new Vector3((Width - 1) / -2f, 0, (Length - 1) / 2f);
-
         int i = 0;
-        for (int z = 0; z < Length; z++)
+        for (int z = 0; z < Length + 1; z++)
         {
-            for (int x = 0; x < Width; x++)
+            for (int x = 0; x < Width + 1; x++)
             {
-                Vertices.Add(topleft + new Vector3(x, 0, -z));
-                UVs.Add(new Vector2(x / (float)Width, z / (float)Length));
+                Vertices.Add(new Vector3(x, 0, -z));
+                UVs.Add(new Vector2(x / ((float)Width + 1), z / ((float)Length + 1)));
 
-                if (x < Width - 1 && z < Length - 1)
+                if (x < Width && z < Length)
                 {
                     AddTriangles(i);
                 }
@@ -51,10 +48,10 @@ public class MeshData
     {
         Triangles.Add(i);
         Triangles.Add(i + 1);
-        Triangles.Add(i + Width + 1);
+        Triangles.Add(i + Width + 2);
         Triangles.Add(i);
+        Triangles.Add(i + Width + 2);
         Triangles.Add(i + Width + 1);
-        Triangles.Add(i + Width);
     }
 
     public void RefreshMesh(Mesh mesh)

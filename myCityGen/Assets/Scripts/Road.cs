@@ -30,12 +30,16 @@ public class Road
         line.AddComponent<LineRenderer>();
 
         LineRenderer l = line.GetComponent<LineRenderer>();
+        Material road = Resources.Load("Road Material", typeof(Material)) as Material;
+        l.material = road;
+
         l.startColor = Color.black;
         l.endColor = Color.black;
-        l.startWidth = 1f;
-        l.endWidth = 1f;
+        l.startWidth = .25f;
+        l.endWidth = .25f;
         l.SetPosition(0, Start);
         l.SetPosition(1, End);
+        l.transform.localScale = new Vector3(1, 1, 1);
 
         return line;
     }
