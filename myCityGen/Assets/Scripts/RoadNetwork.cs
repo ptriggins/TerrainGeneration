@@ -30,39 +30,55 @@ public class RoadNetwork : MonoBehaviour
         candidates.Enqueue(new Road(start, end));
 
         int i = 0;
-        int limit = 2;
+        int limit = 10;
+        int num;
 
-        while (candidates.Count > 0)
+        Road previous = null;
+        while (candidates.Count > 0 && i < limit)
         {
             Road current = candidates.Dequeue();
+            if (previous != null)
+                previous.Relations.Add(current);
             Roads.Add(current);
 
             //int t = CheckIntersections(current);
             //Debug.Log(t);
 
-            i += GetCandidates(current, candidates, tiles, true);
+            if (limit - i > 3)
+                num = 3;
+            else
+                num = limit - i;
+
+            GetBranches(num, current, candidates, tiles, true);
+
+            previous = current;
+            i ++;
             /*
             if (t == 0)
                 GetCandidates(current, candidates, tiles, true);
             else if (t == 1)
                 GetCandidates(current, candidates, tiles, false);
             */
-            i++;
         }
-        CheckIntersections(Roads[Roads.Count - 1]);
+        CheckIntersect(Roads[Roads.Count - 1]);
     }
 
-    public int CheckIntersections(Road current)
+    public int CheckIntersect(Road current)
     {
-        List<Road> roads = new List<Road>();
-        current.Color = Color.blue;
-        GetNextRoads(current, roads);
-        Debug.Log(current.Start);
+        for (int i = 0; i < Roads.Count; i++)
+        {
+            Roads[i].Visited = false;
+        }
 
-        int level = 1;
+        current.Color = Color.blue;
+        List<Road> roads = new List<Road> {current};
+
+        roads = GetNextLevel(roads, 1);
+        roads = GetNextLevel(roads, 2);
+        int level = 2;
+
         while (roads.Count > 0)
         {
-            //Debug.Log(Roads.Count);
             List<float> distances = new List<float>();
             for (int i = 0; i < roads.Count; i++)
             {
@@ -70,51 +86,46 @@ public class RoadNetwork : MonoBehaviour
                 //Debug.Log(DistanceToLine(current.End, roads[i].Start, roads[i].End));
             }
 
-            List<Road> nextRoads = new List<Road>();
-            while (roads.Count > 0)
+            for (int i = 0; i < Roads.Count; i++)
             {
-                float min = distances.Min();
-                Road road = roads[distances.IndexOf(min)];
+                int iMin = distances.IndexOf(distances.Min());
+                Road road = roads[iMin];
 
-                if (min < 2 && level > 1)
+                if (distances[iMin] < 2)
                     return CreateIntersection(road);
-                GetNextRoads(road, nextRoads);
-                distances.Remove(distances[distances.IndexOf(min)]);
-
-                /*
-                if (level == 1)
-                    road.Color = Color.blue;
-                if (level == 2)
-                    road.Color = Color.green;
-                if (level == 3)
-                    road.Color = Color.red;
-                */
-                roads.Remove(road);
+                distances[iMin] = float.MaxValue;
             }
-            roads = nextRoads;
-            //Debug.Log(level);
+            roads = GetNextLevel(roads, level);
             level++;
         }
         return 0;
 
-        void GetNextRoads(Road road, List<Road> list)
+        List<Road> GetNextLevel(List<Road> list, int lev)
         {
-            if (road.Next.Contains(road.Previous) || road.Previous == null)
-                for (int i = 0; i < road.Last.Count; i++)
+            List<Road> nextLevel = new List<Road>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                Road road = list[i];
+                if (!road.Visited)
                 {
-                    //Debug.Log(road.Last[i].End);
-                    list.Add(road.Last[i]);
-                    road.Last[i].Color = Color.red;
-                    road.Last[i].Previous = road;
+                    for (int j = 0; j < road.Relations.Count; j++)
+                    {
+                        Road nextRoad = road.Relations[j];
+                        if (!nextRoad.Visited)
+                        {
+                            if (lev == 1)
+                                nextRoad.Color = Color.yellow;
+                            if (lev == 2)
+                                nextRoad.Color = Color.red;
+                            if (lev == 3)
+                                nextRoad.Color = Color.magenta;
+                            nextLevel.Add(nextRoad);
+                        }
+                    }
                 }
-            else if (road.Last.Contains(road.Previous))
-                for (int i = 0; i < road.Next.Count; i++)
-                {
-                    Debug.Log("help1");
-                    list.Add(road.Next[i]);
-                    road.Last[i].Color = Color.red;
-                    road.Next[i].Previous = road;
-                }
+                road.Visited = true;                 
+            }
+            return nextLevel;
         }
 
         int CreateIntersection(Road road)
@@ -153,10 +164,9 @@ public class RoadNetwork : MonoBehaviour
             float num2 = Mathf.Clamp(Vector3.Dot(lhs, rhs), 0f, magnitude);
             return (start + lhs * num2);
         }
-
     }
 
-    public int GetBranches(int num, Road current, Queue<Road> queue, Tile[,] tiles, bool perps)
+    public void GetBranches(int num, Road current, Queue<Road> queue, Tile[,] tiles, bool perps)
     {
         List<Road> pBranches = new List<Road>();
         List<Road> aBranches = new List<Road>();
@@ -188,10 +198,23 @@ public class RoadNetwork : MonoBehaviour
             aBranches.Add(pBranches[minI]);
             pBranches.Remove(pBranches[minI]);
         }
+
+        for (int i = 0; i < num; i++)
+        {
+            for (int j = 0; j < num; j++)
+            {
+                aBranches[i].Relations.Add(current);
+                if (i != j)
+                    aBranches[i].Relations.Add(aBranches[j]);
+            }
+        }
+
+        for (int i = 0; i < num; i++)
+        {
+            //Debug.Log(aBranches[i].Start);
+            queue.Enqueue(aBranches[i]);
+        }
         
-
-           
-
         Road GetBranch(Road road, float rotation, float probability)
         {
             if (Random.Range(0, 1) < probability)

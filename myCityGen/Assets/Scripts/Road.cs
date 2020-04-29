@@ -10,17 +10,14 @@ public class Road
     public float Angle;
     public Color Color = Color.black;
 
-    public List<Road> Next;
-    public List<Road> Last;
-    public Road Previous;
+    public List<Road> Relations;
+    public bool Visited = false;
 
     public Road(Vector3 start, Vector3 end)
     {
         Start = start;
         End = end;
-        Next = new List<Road>();
-        Last = new List<Road>();
-        Previous = null;
+        Relations = new List<Road>();
     }
 
     public Vector3 Extend(float degrees)
@@ -45,7 +42,7 @@ public class Road
         l.endWidth = 1f;
         l.SetPosition(0, 10 * Start);
         l.SetPosition(1, 10 * End);
-        Debug.Log(Start + " : " + End);
+        //Debug.Log(Start + " : " + End);
 
         return line;
     }
