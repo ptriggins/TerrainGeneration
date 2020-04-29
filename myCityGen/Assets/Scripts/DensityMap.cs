@@ -103,28 +103,6 @@ public class DensityMap : MonoBehaviour
                 }
             }
         }
-
-        for (int x = 0; x < 500; x++)
-        {
-            Colors[x] = Color.blue;
-        }
-        Colors[999999] = Color.blue;
-
-        //Colors[900 + 900 * Length] = Color.blue;
-        /*
-        for (int z = 0; z < Length - 10; z+= 10)
-        {
-            for (int x = 0; z < Width - 10; x+= 10)
-            {
-                if (z == Length - 2 || z == Width - 2)
-                    Colors[x + z * Length] = Color.blue;
-                else
-                    Colors[x + z * Length] = Color.black;
-            } 
-        }
-        */
-
-        Debug.Log(MaxPosition);
         Colors[(int)MaxPosition.x + (int)MaxPosition.z * Length] = Color.blue;
         Texture = TextureGenerator.GetDensityTexture(Width, Length, Colors);
 

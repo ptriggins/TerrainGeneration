@@ -26,11 +26,8 @@ public class Generator : MonoBehaviour
         if (RoadNetwork.Lines != null)
             RoadNetwork.Clear();
 
-        Vector3 topleft = new Vector3((Width - 1) / -2f, 0, (Length - 1) / 2f);
-        Vector3 StartPosition = topleft + DensityMap.MaxPosition;
-
         RoadNetwork.Instantiate();
-        RoadNetwork.Generate(StartPosition, DensityMap.Tiles);
+        RoadNetwork.Generate(DensityMap.MaxPosition, DensityMap.Tiles);
         RoadNetwork.Draw();
     }
 }

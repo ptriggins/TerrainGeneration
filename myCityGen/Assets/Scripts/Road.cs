@@ -19,12 +19,14 @@ public class Road
     public Vector3 GetExtension(float variation, float length)
     {
         Quaternion rotation = Quaternion.Euler(0, Angle + variation, 0);
-        Vector3 direction = rotation * Vector3.right;
-        return Start + rotation * direction * length;
+        return End + rotation * Vector3.right * length;
     }
 
     public GameObject Draw(Transform transform)
     {
+        Start.z *= -1;
+        End.z *= -1;
+
         GameObject line = new GameObject();
         line.transform.SetParent(transform);
         line.AddComponent<LineRenderer>();
@@ -35,11 +37,10 @@ public class Road
 
         l.startColor = Color.black;
         l.endColor = Color.black;
-        l.startWidth = .25f;
-        l.endWidth = .25f;
-        l.SetPosition(0, Start);
-        l.SetPosition(1, End);
-        l.transform.localScale = new Vector3(1, 1, 1);
+        l.startWidth = 1f;
+        l.endWidth = 1f;
+        l.SetPosition(0, 10 * Start);
+        l.SetPosition(1, 10 * End);
 
         return line;
     }

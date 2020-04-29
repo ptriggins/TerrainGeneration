@@ -26,13 +26,11 @@ public class RoadNetwork : MonoBehaviour
         Vector3 direction = new Vector3(randDir.x, 0, randDir.y);
         Vector3 end = start + direction * Length;
 
-        Roads.Add(new Road(start, end));
-        /*
         Queue<Road> candidates = new Queue<Road>();
         candidates.Enqueue(new Road(start, end));
 
         int i = 0;
-        int limit = 10;
+        int limit = 5;
 
         while (candidates.Count > 0 && i < limit)
         {
@@ -41,17 +39,14 @@ public class RoadNetwork : MonoBehaviour
             GetCandidates(current, candidates, tiles);
             i++;
         }
-        */
     }
 
     public void GetCandidates(Road current, Queue<Road> queue, Tile[,] tiles)
     {
-        Vector3 start = current.End;
-
         Vector3[] variants = new Vector3[3];
-        variants[0] = current.GetExtension(-20, Length);
+        variants[0] = current.GetExtension(-15, Length);
         variants[1] = current.GetExtension(0, Length);
-        variants[2] = current.GetExtension(20, Length);
+        variants[2] = current.GetExtension(15, Length);
         //Debug.Log(variants[0] + ", " + variants[1] + ", " + variants[2]);
        
         float[] values = new float[3];
@@ -62,15 +57,17 @@ public class RoadNetwork : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             if (values[i] == values.Max())
-                queue.Enqueue(new Road(start, variants[i]));
+                queue.Enqueue(new Road(current.End, variants[i]));
         }
 
+        /*
         DensityType type = tiles[(int)start.x, (int)start.z].Type;
   
         if (Random.Range(0, 1) < type.Percentile / 2)
             queue.Enqueue(new Road(start, current.GetExtension(90, Length)));
         if (Random.Range(0, 1) < type.Percentile / 2)
             queue.Enqueue(new Road(start, current.GetExtension(90, Length)));
+        */
     }
 
     public void Draw()
