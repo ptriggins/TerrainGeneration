@@ -30,7 +30,7 @@ public class RoadNetwork : MonoBehaviour
         candidates.Enqueue(new Road(start, end));
 
         int i = 0;
-        int limit = 20;
+        int limit = 100;
 
         while (candidates.Count > 0 && i < limit)
         {
@@ -59,14 +59,13 @@ public class RoadNetwork : MonoBehaviour
             for (int i = 0; i < roads.Count; i++)
             {
                 distances.Add(DistanceToLine(current.End, roads[i].Start, roads[i].End));
-                Debug.Log(DistanceToLine(current.End, roads[i].Start, roads[i].End));
+                //Debug.Log(DistanceToLine(current.End, roads[i].Start, roads[i].End));
             }
 
             List<Road> nextRoads = new List<Road>();
             while (roads.Count > 0)
             {
                 float min = distances.Min();
-                Debug.Log(distances.IndexOf(min));
                 Road road = roads[distances.IndexOf(min)];
 
                 if (min < 2 && level > 1)
@@ -140,7 +139,12 @@ public class RoadNetwork : MonoBehaviour
         variants[0] = current.GetExtension(-15, Length);
         variants[1] = current.GetExtension(0, Length);
         variants[2] = current.GetExtension(15, Length);
-       
+
+        Debug.Log((int)variants[0].x + ", " + (int)variants[0].z);
+        Debug.Log((int)variants[1].x + ", " + (int)variants[1].z);
+        Debug.Log((int)variants[2].x + ", " + (int)variants[2].z);
+        Debug.Log("");
+
         float[] values = new float[3];
         values[0] = tiles[(int)variants[0].x, (int)variants[0].z].Value;
         values[1] = tiles[(int)variants[1].x, (int)variants[1].z].Value;

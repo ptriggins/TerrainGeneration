@@ -18,17 +18,16 @@ public class Road
     {
         Start = start;
         End = end;
-        Angle = Vector3.Angle(Vector3.right, end - start);
 
         Next = new List<Road>();
         Last = new List<Road>();
         Previous = null;
     }
 
-    public Vector3 GetExtension(float variation, float length)
+    public Vector3 GetExtension(float degrees, float length)
     {
-        Quaternion rotation = Quaternion.Euler(0, Angle + variation, 0);
-        return End + rotation * Vector3.right * length;
+        Quaternion rotation = Quaternion.Euler(0, degrees, 0);
+        return End + rotation * (End - Start);
     }
 
     public GameObject Draw(Transform transform)
