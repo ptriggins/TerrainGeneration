@@ -99,12 +99,13 @@
      <Compile Include="Assets\Scripts\DensityMap.cs" />
      <Compile Include="Assets\Scripts\Display.cs" />
      <Compile Include="Assets\Scripts\Generator.cs" />
+     <Compile Include="Assets\Scripts\LineHelper.cs" />
      <Compile Include="Assets\Scripts\MapData.cs" />
      <Compile Include="Assets\Scripts\MathHelper.cs" />
      <Compile Include="Assets\Scripts\MeshData.cs" />
      <Compile Include="Assets\Scripts\Node.cs" />
-     <Compile Include="Assets\Scripts\Road.cs" />
-     <Compile Include="Assets\Scripts\RoadNetwork.cs" />
+     <Compile Include="Assets\Scripts\Roads.cs" />
+     <Compile Include="Assets\Scripts\Segment.cs" />
      <Compile Include="Assets\Scripts\TextureGenerator.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />
  <Reference Include="Unity.Timeline.Editor">

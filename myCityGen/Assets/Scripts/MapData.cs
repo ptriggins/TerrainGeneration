@@ -14,7 +14,7 @@ public class MapData
         Max = float.MinValue;
     }
 
-    public void Calculate(ImplicitModuleBase module)
+    public void CalculateData(ImplicitModuleBase module)
     {
         int width = Values.GetLength(0);
         int length = Values.GetLength(1);
