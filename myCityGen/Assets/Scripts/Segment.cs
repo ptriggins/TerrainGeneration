@@ -6,22 +6,16 @@ using UnityEngine;
 public class Segment
 {
     public Node StartNode;
-    public Vector3 Direction;
     public Node EndNode;
-    public float length;
 
+    public Vector3 Direction;
     public Color Color = Color.black;
 
-    public Segment(Vector3 s, Vector3 d, float l)
+    public Segment(Node s, Node e)
     {
-        Start = s;
-        End = s + d * l;
-    }
-
-    public Vector3 Rotate(Vector3 startPosition, float rotationDegrees)
-    {
-        Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
-        return new Node(End.Position + rotation * (End.Position - Start.Position));
+        StartNode = s;
+        EndNode = e;
+        Direction = EndNode.Position - StartNode.Position;
     }
 
     public GameObject Draw(Transform transform)
@@ -36,8 +30,8 @@ public class Segment
         l.sharedMaterial.color = Color;
         l.startWidth = 1f;
         l.endWidth = 1f;
-        l.SetPosition(0, 10 * Start.Position);
-        l.SetPosition(1, 10 * End.Position);
+        l.SetPosition(0, 10 * StartNode.Position);
+        l.SetPosition(1, 10 * EndNode.Position);
         //Debug.Log(Start + " : " + End);
 
         return line;

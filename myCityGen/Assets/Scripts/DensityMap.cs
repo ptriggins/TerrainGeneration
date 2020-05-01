@@ -58,7 +58,7 @@ public class DensityMap : MonoBehaviour
 
     public void Generate()
     {
-        MapData.Calculate(Noise);
+        MapData.CalculateData(Noise);
         MeshData.Calculate(MapData.Values);
 
         float max = float.MinValue;

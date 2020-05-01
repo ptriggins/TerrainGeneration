@@ -5,23 +5,13 @@ using UnityEngine;
 public class Node
 {
     public Vector3 Position;
-    public float Density;
+    public float Value;
     public Node ParentNode = null;
 
-    public Node(Vector3 p, Node pn)
+    public Node(Vector3 p, float v, Node pn)
     {
         Position = p;
+        Value = v;
         ParentNode = pn;
-    }
-
-    public float GetDensity(Tiles[] tiles)
-    {
-        int x = (int)Mathf.Floor(Position.x);
-        int y = (int)Mathf.Floor(Position.y);
-    }
-
-    int GetFloor(float val)
-    {
-        return (int)Mathf.Floor(val);
     }
 }

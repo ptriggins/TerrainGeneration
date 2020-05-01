@@ -12,4 +12,5 @@ public class Tile
         Value = value;
         Color = type.Color;
     }
+
 }

@@ -4,12 +4,14 @@ using AccidentalNoise;
 public class MapData
 {
     public float[,] Values;
-    public float Min;
-    public float Max;
+    public int Width, Length;
+    public float Min, Max;
 
     public MapData(int width, int length)
     {
         Values = new float[width, length];
+        Width = width;
+        Length = length;
         Min = float.MaxValue;
         Max = float.MinValue;
     }
@@ -42,5 +44,19 @@ public class MapData
                 Values[x, z] = (Values[x, z] - Min) / (Max - Min);
             }
         }
+    }
+
+    public float GetValue(Vector3 position)
+    {
+        int x = (int)Mathf.Floor(position.x);
+        int z = (int)Mathf.Floor(position.y);
+
+        if (x < 0 || x >= Width || z < 0 || z >= Length)
+        {
+            Debug.Log("Error, Index out of Range: " + x + ", " + z);
+            return -1f;
+        }
+        else
+            return Values[x, z];
     }
 }

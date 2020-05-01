@@ -45,11 +45,11 @@ public class MeshData
     private void AddTriangles(int i)
     {
         Triangles.Add(i);
-        Triangles.Add(i + 1);
+        Triangles.Add(i + Width + 1);
         Triangles.Add(i + Width + 2);
         Triangles.Add(i);
         Triangles.Add(i + Width + 2);
-        Triangles.Add(i + Width + 1);
+        Triangles.Add(i + 1);
     }
 
     public void RefreshMesh(Mesh mesh)
