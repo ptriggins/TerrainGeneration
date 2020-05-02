@@ -106,7 +106,6 @@ public class RoadNetwork : MonoBehaviour
             rotation += Variation;
         }
 
-        Debug.Log(pNodes.Count + ": " + iMin);
         if (min < float.MaxValue)
             stack.Push(pNodes[iMin]);
 
@@ -210,7 +209,7 @@ public class RoadNetwork : MonoBehaviour
             }
         }
 
-        if ((tPos - pPos).magnitude < SegmentLength / 2)
+        if ((tPos - pPos).magnitude < GetLengthPotential(test.Value) / 2)
             type = XingType.Trivial;
 
         test.Position = tPos;
@@ -243,11 +242,11 @@ public class RoadNetwork : MonoBehaviour
     Vector3 GetExtension(Vector3 position, Vector3 direction, int degreeRotation, MapData mapdata)
     {
         Quaternion rotation = Quaternion.Euler(0, degreeRotation, 0);
-        return position + rotation * direction * GetLength(position, mapdata);
+        return position + rotation * direction * GetLengthPotential(mapdata.GetValue(position));
     }
 
-    float GetLength(Vector3 position, MapData mapdata)
+    float GetLengthPotential(float value)
     {
-        return SegmentLength * (1.0001f - mapdata.GetValue(position)) * 10;
+        return SegmentLength + (1.0001f - value) * 10;
     }
 }
