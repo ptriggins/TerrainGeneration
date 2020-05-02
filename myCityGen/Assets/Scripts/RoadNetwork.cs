@@ -40,7 +40,6 @@ public class RoadNetwork : MonoBehaviour
     public void Generate(Vector3 startPos, MapData mapdata)
     {
         startPos.y += SegmentHeight;
-
         Vector3 direction = GetRandOnUnitCircle();
         Vector3 testPos = GetExtension(startPos, direction, 0, mapdata);
 
@@ -249,6 +248,6 @@ public class RoadNetwork : MonoBehaviour
 
     float GetLength(Vector3 position, MapData mapdata)
     {
-        return SegmentLength + SegmentLength * (1 - mapdata.GetValue(position)) * 10;
+        return SegmentLength * (1.0001f - mapdata.GetValue(position)) * 10;
     }
 }
