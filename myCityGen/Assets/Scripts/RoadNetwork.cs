@@ -58,7 +58,7 @@ public class RoadNetwork : MonoBehaviour
             parent = test.ParentNode;
 
             XingType type = GetXingType(parent, test, i + 1);
-            Debug.Log((i + 1) + ": " + type);
+            //Debug.Log((i + 1) + ": " + type);
 
             /*
             Vector3 tPosition = parent.Position + direction / 4;
@@ -221,7 +221,10 @@ public class RoadNetwork : MonoBehaviour
                 tPos = sPos;
             else if ((tPos - ePos).magnitude < SegmentLength / MergeTolerance / 2)
                 tPos = ePos;
+
+            test.Position = tPos;
         }
+        Debug.Log(j + " (" + type + ") : " + minDistance);
         return type;
     }
 
