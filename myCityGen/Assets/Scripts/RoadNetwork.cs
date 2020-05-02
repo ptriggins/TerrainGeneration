@@ -22,6 +22,10 @@ public class RoadNetwork : MonoBehaviour
     [SerializeField]
     public int Variation = 15;
     [SerializeField]
+    public float BranchFrequency = 16;
+    [SerializeField]
+    public float MergeTolerance = 4;
+    [SerializeField]
     public int NumSegments = 10;
 
     public List<Segment> Segments;
@@ -54,6 +58,7 @@ public class RoadNetwork : MonoBehaviour
             parent = test.ParentNode;
 
             XingType type = GetXingType(parent, test, i + 1);
+            Debug.Log((i + 1) + ": " + type);
 
             /*
             Vector3 tPosition = parent.Position + direction / 4;
@@ -73,7 +78,6 @@ public class RoadNetwork : MonoBehaviour
             if (type != XingType.Redundant)
             {
                 segment = new Segment(parent, test, i + 1);
-                Debug.Log((i + 1) + ": " + type);
 
                 if (type == XingType.Free)
                     GetNodes(segment, candidates, mapdata, true);
@@ -124,12 +128,12 @@ public class RoadNetwork : MonoBehaviour
             float p = previous.EndNode.Value;
             Vector3 bPos;
 
-            if (Random.Range(0, 1) < p / 16f)
+            if (Random.Range(0, 1) < p / BranchFrequency)
             {
                 bPos = GetExtension(sPos, direction, -90);
                 queue.Enqueue(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
             }
-            if (Random.Range(0, 1) < p / 16f)
+            if (Random.Range(0, 1) < p / BranchFrequency)
             {
                 bPos = GetExtension(sPos, direction, 90);
                 queue.Enqueue(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
@@ -141,69 +145,83 @@ public class RoadNetwork : MonoBehaviour
     {
         XingType type = XingType.Free;
 
-        List<float> distances = new List<float>();
+        List<float> dLines = new List<float>();
+        List<float> dIntersects = new List<float>();
+
+        float dMinIntersect = float.MaxValue;
+        int iIntersect = -1;
+
+        List<float> dP1toIntersects = new List<float>();
+        List<int> iIntersects = new List<int>();
+
+        Vector3 
+            tPos = test.Position, 
+            pPos = parent.Position, 
+            sPos, ePos;
+
         for (int i = 0; i < Segments.Count; i++)
         {
-            Node s = Segments[i].StartNode,
-                 e = Segments[i].EndNode;
-
-            if (parent == s || parent == e)
-              distances.Add(float.MaxValue);
-            else
-              distances.Add(LineHelper.GetDistanceToLine(test.Position, s.Position, e.Position));
-        }
-
-        float distance = distances.Min();
-        Segment closestSegment = Segments[distances.IndexOf(distance)];
-
-        Vector3
-                tPos = test.Position,
-                pPos = parent.Position,
-                sPos = closestSegment.StartNode.Position,
-                ePos = closestSegment.EndNode.Position,
-                lPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
-
-        /*
-        Vector3 tst = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
-        Node t = new Node(tst, 0f, null);
-        Segment seg = new Segment(test, t, -1);
-        seg.Color = Color.red;
-        Segments.Add(seg);
-        */
-
-        //bool t = LineHelper.DoSegmentsIntersect(pPos, tPos, sPos, ePos);
-        //Debug.Log(j + " intersects " + closestSegment.name + ": " + t);
-        Debug.Log(j + " is " + distance + " away from " + closestSegment.name);
-        if (distance < float.MaxValue)
-        {
-            if (LineHelper.DoLinesIntersect(pPos, tPos, sPos, ePos))
+            if (Segments[i].StartNode != parent && Segments[i].EndNode != parent)
             {
-                if (distance < SegmentLength / 2)
+                sPos = Segments[i].StartNode.Position;
+                ePos = Segments[i].EndNode.Position;
+                dLines.Add(LineHelper.GetDistanceToLine(tPos, sPos, ePos));
+
+                if (LineHelper.DoSegmentsIntersect(pPos, tPos, sPos, ePos))
                 {
-                    tPos = lPos;
-                    if ((tPos - sPos).magnitude < SegmentLength / 4)
-                        tPos = sPos;
-                    else if ((tPos - ePos).magnitude < SegmentLength / 4)
-                        tPos = ePos;
+                    float dIntersect = LineHelper.GetDistanceToLine(pPos, sPos, ePos);
 
-                    type = XingType.Crossing;
+                    if (dIntersect < dMinIntersect)
+                    {
+                        dMinIntersect = dIntersect;
+                        iIntersect = i;
+                    }
                 }
-                else
-                    type = XingType.Redundant;
             }
-            else if (distance < SegmentLength / 2 && distance < float.MaxValue)
-            {
-                tPos = lPos;
-                if ((tPos - sPos).magnitude < SegmentLength / 4)
-                    tPos = sPos;
-                else if ((tPos - ePos).magnitude < SegmentLength / 4)
-                    tPos = ePos;
-
-                type = XingType.Ending;
-            }
-
+            else
+                dLines.Add(float.MaxValue);     
         }
-        test.Position = tPos;
+
+        if (iIntersect != -1)
+        {
+            type = XingType.Crossing;
+
+            Segment intersect = Segments[iIntersect];
+            sPos = intersect.StartNode.Position;
+            ePos = intersect.EndNode.Position;
+            tPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
+
+            if ((tPos - sPos).magnitude < SegmentLength / MergeTolerance / 2)
+            {
+                type = XingType.Ending;
+                tPos = sPos;
+            }
+            else if ((tPos - ePos).magnitude < SegmentLength / MergeTolerance / 2)
+            {
+                type = XingType.Ending;
+                tPos = ePos;
+            }
+
+            test.Position = tPos;
+            return type;
+        }
+
+        float minDistance = dLines.Min();
+        Segment closestSegment = Segments[dLines.IndexOf(minDistance)];
+
+        if (minDistance < SegmentLength / MergeTolerance)
+        {
+            type = XingType.Ending;
+
+            sPos = closestSegment.StartNode.Position;
+            ePos = closestSegment.EndNode.Position;
+            tPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
+
+            if ((tPos - sPos).magnitude < SegmentLength / MergeTolerance / 2)
+                tPos = sPos;
+            else if ((tPos - ePos).magnitude < SegmentLength / MergeTolerance / 2)
+                tPos = ePos;
+        }
         return type;
     }
 

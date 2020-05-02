@@ -4,30 +4,6 @@ using UnityEngine;
 
 public static class LineHelper
 {
-    /*
-    public static bool DoLinesIntersect(Vector3 line1a, Vector3 line1b, Vector3 line2a, Vector3 line2b)
-    {
-        return (((line2b.z - line1a.z) * (line2a.x - line1a.x) > (line2a.z - line1a.z) * (line2b.x - line1a.x))
-                != ((line2b.z - line1b.z) * (line2a.x - line1b.x) > (line2a.z - line1b.z) * (line2b.x - line1b.x))
-                    && ((line2a.y - line1a.y) * (line1b.x - line1a.x) > (line1b.z - line1a.z) * (line2a.x - line1a.x))
-                        != ((line2b.y - line1a.y) * (line1b.x - line1a.x) > (line1b.y - line1a.y) * (line2b.x - line1a.x)));
-    }
-    */
-
-    public static bool DoLinesIntersect(Vector3 s1, Vector3 e1, Vector3 s2, Vector3 e2)
-    {
-        //if ((e1 - s1).magnitude > GetDistanceToLine(s1, s2, e2));
-
-        //Vector3 intersection = GetIntersection(s1, e1, s2, e1);
-
-        float distance1 = (e1 - s1).magnitude;
-        float distance2 = GetDistanceToLine(s1, s2, e2);
-
-        if (distance1 > distance2)
-            return true;
-        return false;
-
-    }
 
     public static bool DoSegmentsIntersect(Vector3 l1s, Vector3 l1e, Vector3 l2s, Vector3 l2e)
     {
