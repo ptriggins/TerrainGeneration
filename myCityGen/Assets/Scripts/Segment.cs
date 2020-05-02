@@ -7,15 +7,17 @@ public class Segment
 {
     public Node StartNode;
     public Node EndNode;
+    public int name;
 
     public Vector3 Direction;
     public Color Color = Color.black;
 
-    public Segment(Node s, Node e)
+    public Segment(Node s, Node e, int i)
     {
         StartNode = s;
         EndNode = e;
         Direction = EndNode.Position - StartNode.Position;
+        name = i;
     }
 
     public GameObject Draw(Transform transform)
@@ -24,6 +26,7 @@ public class Segment
         GameObject line = new GameObject();
         line.transform.SetParent(transform);
         line.AddComponent<LineRenderer>();
+        line.name = name.ToString();
 
         LineRenderer l = line.GetComponent<LineRenderer>();
         l.material = new Material(Shader.Find("Unlit/Color"));

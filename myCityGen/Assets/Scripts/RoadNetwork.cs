@@ -44,7 +44,7 @@ public class RoadNetwork : MonoBehaviour
 
         int i = 1;
         Queue<Node> candidates = new Queue<Node>();
-        Segment segment = new Segment(parent, test);
+        Segment segment = new Segment(parent, test, i);
         GetNodes(segment, candidates, mapdata, true);
         Segments.Add(segment);
 
@@ -53,25 +53,27 @@ public class RoadNetwork : MonoBehaviour
             test = candidates.Dequeue();
             parent = test.ParentNode;
 
-            //XingType type = GetXingType(parent, test);
-            //Debug.Log((i + 1) + ": "+ type);
+            XingType type = GetXingType(parent, test, i + 1);
 
+            /*
             Vector3 tPosition = parent.Position + direction / 4;
             tPosition.y += .1f;
             Node t = new Node(tPosition, mapdata.GetValue(tPosition), parent);
             Segment t1 = new Segment(parent, t);
             t1.Color = Color.blue;
-            t1.Draw((Transform)gameObject.GetComponent(typeof(Transform)));
-            Debug.Log(i + 1);
+            Segments.Add(t1);
+            */
 
+            /*
             segment = new Segment(parent, test);
             GetNodes(segment, candidates, mapdata, true);
             Segments.Add(segment);
+            */
 
-            /*
             if (type != XingType.Redundant)
             {
-                segment = new Segment(parent, test);
+                segment = new Segment(parent, test, i + 1);
+                Debug.Log((i + 1) + ": " + type);
 
                 if (type == XingType.Free)
                     GetNodes(segment, candidates, mapdata, true);
@@ -79,10 +81,8 @@ public class RoadNetwork : MonoBehaviour
                     GetNodes(segment, candidates, mapdata, false);
 
                 Segments.Add(segment);
+                i++;
             }
-            */
-            i ++;
-
         }
     }
 
@@ -98,7 +98,7 @@ public class RoadNetwork : MonoBehaviour
         float min = float.MaxValue;
         int iMin = 0;
 
-        for (int i = 0; i <= 3; i++)
+        for (int i = 0; i < 3; i++)
         {
             Vector3 pPos = GetExtension(sPos, direction, rotation);
             float val = mapdata.GetValue(pPos);
@@ -109,8 +109,13 @@ public class RoadNetwork : MonoBehaviour
                 iMin = i;
             }
 
-            pNodes.Add(new Node(pPos, val, previous.EndNode));
-            Variation += Variation;
+            Node tNode = new Node(pPos, val, previous.EndNode);
+            //Segment seg = new Segment(previous.EndNode, tNode);
+            //seg.Color = Color.yellow;
+            //Segments.Add(seg);
+
+            pNodes.Add(tNode);
+            rotation += Variation;
         }
         queue.Enqueue(pNodes[iMin]);
 
@@ -119,20 +124,20 @@ public class RoadNetwork : MonoBehaviour
             float p = previous.EndNode.Value;
             Vector3 bPos;
 
-            if (Random.Range(0, 1) < p / 2f)
+            if (Random.Range(0, 1) < p / 16f)
             {
                 bPos = GetExtension(sPos, direction, -90);
                 queue.Enqueue(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
             }
-            if (Random.Range(0, 1) < p / 2f)
+            if (Random.Range(0, 1) < p / 16f)
             {
-                bPos = GetExtension(sPos, direction, -90);
+                bPos = GetExtension(sPos, direction, 90);
                 queue.Enqueue(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
             }
         }
     }
 
-    public XingType GetXingType(Node parent, Node test)
+    public XingType GetXingType(Node parent, Node test, int j)
     {
         XingType type = XingType.Free;
 
@@ -149,7 +154,6 @@ public class RoadNetwork : MonoBehaviour
         }
 
         float distance = distances.Min();
-        Debug.Log(distance);
         Segment closestSegment = Segments[distances.IndexOf(distance)];
 
         Vector3
@@ -159,9 +163,35 @@ public class RoadNetwork : MonoBehaviour
                 ePos = closestSegment.EndNode.Position,
                 lPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
 
-        if (LineHelper.DoLinesIntersect(pPos, tPos, sPos, ePos))
+        /*
+        Vector3 tst = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
+        Node t = new Node(tst, 0f, null);
+        Segment seg = new Segment(test, t, -1);
+        seg.Color = Color.red;
+        Segments.Add(seg);
+        */
+
+        //bool t = LineHelper.DoSegmentsIntersect(pPos, tPos, sPos, ePos);
+        //Debug.Log(j + " intersects " + closestSegment.name + ": " + t);
+        Debug.Log(j + " is " + distance + " away from " + closestSegment.name);
+        if (distance < float.MaxValue)
         {
-            if (distance < SegmentLength / 2)
+            if (LineHelper.DoLinesIntersect(pPos, tPos, sPos, ePos))
+            {
+                if (distance < SegmentLength / 2)
+                {
+                    tPos = lPos;
+                    if ((tPos - sPos).magnitude < SegmentLength / 4)
+                        tPos = sPos;
+                    else if ((tPos - ePos).magnitude < SegmentLength / 4)
+                        tPos = ePos;
+
+                    type = XingType.Crossing;
+                }
+                else
+                    type = XingType.Redundant;
+            }
+            else if (distance < SegmentLength / 2 && distance < float.MaxValue)
             {
                 tPos = lPos;
                 if ((tPos - sPos).magnitude < SegmentLength / 4)
@@ -169,21 +199,11 @@ public class RoadNetwork : MonoBehaviour
                 else if ((tPos - ePos).magnitude < SegmentLength / 4)
                     tPos = ePos;
 
-                type = XingType.Crossing;
+                type = XingType.Ending;
             }
-            else
-                type = XingType.Redundant;
-        }
-        else if (distance < SegmentLength / 2)
-        {
-            tPos = lPos;
-            if ((tPos - sPos).magnitude < SegmentLength / 4)
-                tPos = sPos;
-            else if ((tPos - ePos).magnitude < SegmentLength / 4)
-                tPos = ePos;
 
-            type = XingType.Ending;
         }
+        test.Position = tPos;
         return type;
     }
 

@@ -49,7 +49,7 @@ public class MapData
     public float GetValue(Vector3 position)
     {
         int x = (int)Mathf.Floor(position.x);
-        int z = (int)Mathf.Floor(position.y);
+        int z = (int)Mathf.Floor(position.z);
 
         if (x < 0 || x >= Width || z < 0 || z >= Length)
         {
