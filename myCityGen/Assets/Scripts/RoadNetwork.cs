@@ -70,7 +70,7 @@ public class RoadNetwork : MonoBehaviour
                     GetNodes(segment, candidates, mapdata, false);
 
                 Segments.Add(segment);
-                Debug.Log(i + 1 + ": " + (segment.StartNode.Position - segment.EndNode.Position).magnitude);
+                //Debug.Log(i + 1 + ": " + (segment.StartNode.Position - segment.EndNode.Position).magnitude);
                 i++;
             }
         }
@@ -86,7 +86,7 @@ public class RoadNetwork : MonoBehaviour
 
         int rotation = -Variation;
         float min = float.MaxValue;
-        int iMin = 0;
+        int iMin = -1;
 
         for (int i = 0; i < 3; i++)
         {
@@ -98,7 +98,7 @@ public class RoadNetwork : MonoBehaviour
                 if (val < min)
                 {
                     min = val;
-                    iMin = i;
+                    iMin ++;
                 }
 
                 Node tNode = new Node(pPos, val, previous.EndNode);
@@ -107,7 +107,8 @@ public class RoadNetwork : MonoBehaviour
             rotation += Variation;
         }
 
-        if (iMin < float.MaxValue)
+        Debug.Log(pNodes.Count + ": " + iMin);
+        if (min < float.MaxValue)
             stack.Push(pNodes[iMin]);
 
         if (branchesAllowed == true)

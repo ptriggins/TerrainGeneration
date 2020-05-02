@@ -53,7 +53,7 @@ public class MapData
 
         if (x < 0 || x >= Width || z < 0 || z >= Length)
         {
-            Debug.Log("Error, Index out of Range: " + x + ", " + z);
+            //Debug.Log("Error, Index out of Range: " + x + ", " + z);
             return -1f;
         }
         else
