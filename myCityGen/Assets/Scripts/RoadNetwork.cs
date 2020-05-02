@@ -7,7 +7,7 @@ public enum XingType
     Crossing,
     Ending,
     Free,
-    Redundant
+    Trivial
 }
 
 public class RoadNetwork : MonoBehaviour
@@ -22,7 +22,7 @@ public class RoadNetwork : MonoBehaviour
     [SerializeField]
     public int Variation = 15;
     [SerializeField]
-    public float BranchFrequency = 16;
+    public float BranchProbability = .1f;
     [SerializeField]
     public float MergeTolerance = 4;
     [SerializeField]
@@ -40,42 +40,27 @@ public class RoadNetwork : MonoBehaviour
     public void Generate(Vector3 startPos, MapData mapdata)
     {
         startPos.y += SegmentHeight;
-        Vector3 direction = GetRandOnUnitCircle() * SegmentLength;
-        Vector3 testPos = GetExtension(startPos, direction, 0);
+
+        Vector3 direction = GetRandOnUnitCircle();
+        Vector3 testPos = GetExtension(startPos, direction, 0, mapdata);
 
         Node parent = new Node(startPos, mapdata.GetValue(startPos), null);
         Node test = new Node(testPos, mapdata.GetValue(testPos), parent);
 
         int i = 1;
-        Queue<Node> candidates = new Queue<Node>();
+        Stack<Node> candidates = new Stack<Node>();
         Segment segment = new Segment(parent, test, i);
         GetNodes(segment, candidates, mapdata, true);
         Segments.Add(segment);
 
         while (candidates.Count > 0 && i < NumSegments)
         {
-            test = candidates.Dequeue();
+            test = candidates.Pop();
             parent = test.ParentNode;
 
             XingType type = GetXingType(parent, test, i + 1);
-            //Debug.Log((i + 1) + ": " + type);
 
-            /*
-            Vector3 tPosition = parent.Position + direction / 4;
-            tPosition.y += .1f;
-            Node t = new Node(tPosition, mapdata.GetValue(tPosition), parent);
-            Segment t1 = new Segment(parent, t);
-            t1.Color = Color.blue;
-            Segments.Add(t1);
-            */
-
-            /*
-            segment = new Segment(parent, test);
-            GetNodes(segment, candidates, mapdata, true);
-            Segments.Add(segment);
-            */
-
-            if (type != XingType.Redundant)
+            if (type != XingType.Trivial)
             {
                 segment = new Segment(parent, test, i + 1);
 
@@ -85,12 +70,13 @@ public class RoadNetwork : MonoBehaviour
                     GetNodes(segment, candidates, mapdata, false);
 
                 Segments.Add(segment);
+                Debug.Log(i + 1 + ": " + (segment.StartNode.Position - segment.EndNode.Position).magnitude);
                 i++;
             }
         }
     }
 
-    public void GetNodes(Segment previous, Queue<Node> queue, MapData mapdata, bool branchesAllowed)
+    public void GetNodes(Segment previous, Stack<Node> stack, MapData mapdata, bool branchesAllowed)
     {
         List<Node> pNodes = new List<Node>();
         List<Node> aNodes = new List<Node>();
@@ -104,39 +90,42 @@ public class RoadNetwork : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
-            Vector3 pPos = GetExtension(sPos, direction, rotation);
+            Vector3 pPos = GetExtension(sPos, direction, rotation, mapdata);
             float val = mapdata.GetValue(pPos);
 
-            if (val < min)
+            if (val != -1)
             {
-                min = val;
-                iMin = i;
+                if (val < min)
+                {
+                    min = val;
+                    iMin = i;
+                }
+
+                Node tNode = new Node(pPos, val, previous.EndNode);
+                pNodes.Add(tNode);
             }
-
-            Node tNode = new Node(pPos, val, previous.EndNode);
-            //Segment seg = new Segment(previous.EndNode, tNode);
-            //seg.Color = Color.yellow;
-            //Segments.Add(seg);
-
-            pNodes.Add(tNode);
             rotation += Variation;
         }
-        queue.Enqueue(pNodes[iMin]);
+
+        if (iMin < float.MaxValue)
+            stack.Push(pNodes[iMin]);
 
         if (branchesAllowed == true)
         {
             float p = previous.EndNode.Value;
             Vector3 bPos;
 
-            if (Random.Range(0, 1) < p / BranchFrequency)
+            if (Random.Range(0, 1) < BranchProbability)
             {
-                bPos = GetExtension(sPos, direction, -90);
-                queue.Enqueue(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
+                bPos = GetExtension(sPos, direction, -90, mapdata);
+                if (mapdata.GetValue(bPos) != -1)
+                    stack.Push(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
             }
-            if (Random.Range(0, 1) < p / BranchFrequency)
+            if (Random.Range(0, 1) < BranchProbability)
             {
-                bPos = GetExtension(sPos, direction, 90);
-                queue.Enqueue(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
+                bPos = GetExtension(sPos, direction, 90, mapdata);
+                if (mapdata.GetValue(bPos) != -1)
+                    stack.Push(new Node(bPos, mapdata.GetValue(bPos), previous.EndNode));
             }
         }
     }
@@ -191,40 +180,40 @@ public class RoadNetwork : MonoBehaviour
             ePos = intersect.EndNode.Position;
             tPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
 
-            if ((tPos - sPos).magnitude < SegmentLength / MergeTolerance / 2)
+            if ((tPos - sPos).magnitude < (sPos - ePos).magnitude / 4)
             {
                 type = XingType.Ending;
                 tPos = sPos;
             }
-            else if ((tPos - ePos).magnitude < SegmentLength / MergeTolerance / 2)
+            else if ((tPos - ePos).magnitude < (sPos - ePos).magnitude / 4)
             {
                 type = XingType.Ending;
                 tPos = ePos;
             }
-
-            test.Position = tPos;
-            return type;
         }
-
-        float minDistance = dLines.Min();
-        Segment closestSegment = Segments[dLines.IndexOf(minDistance)];
-
-        if (minDistance < SegmentLength / MergeTolerance)
+        else
         {
-            type = XingType.Ending;
-
+            float minDistance = dLines.Min();
+            Segment closestSegment = Segments[dLines.IndexOf(minDistance)];
             sPos = closestSegment.StartNode.Position;
             ePos = closestSegment.EndNode.Position;
-            tPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
 
-            if ((tPos - sPos).magnitude < SegmentLength / MergeTolerance / 2)
-                tPos = sPos;
-            else if ((tPos - ePos).magnitude < SegmentLength / MergeTolerance / 2)
-                tPos = ePos;
+            if (minDistance < (sPos - ePos).magnitude / 2)
+            {
+                type = XingType.Ending;
+                tPos = LineHelper.ProjectPointToLine(tPos, sPos, ePos);
 
-            test.Position = tPos;
+                if ((tPos - sPos).magnitude < (sPos - ePos).magnitude / 4)
+                    tPos = sPos;
+                else if ((tPos - ePos).magnitude < (sPos - ePos).magnitude / 4)
+                    tPos = ePos;
+            }
         }
-        Debug.Log(j + " (" + type + ") : " + minDistance);
+
+        if ((tPos - pPos).magnitude < SegmentLength / 2)
+            type = XingType.Trivial;
+
+        test.Position = tPos;
         return type;
     }
 
@@ -251,9 +240,14 @@ public class RoadNetwork : MonoBehaviour
         return new Vector3(randDir.x, 0, randDir.y);
     }
 
-    Vector3 GetExtension(Vector3 position, Vector3 direction, int degreeRotation)
+    Vector3 GetExtension(Vector3 position, Vector3 direction, int degreeRotation, MapData mapdata)
     {
         Quaternion rotation = Quaternion.Euler(0, degreeRotation, 0);
-        return position + rotation * direction;
+        return position + rotation * direction * GetLength(position, mapdata);
+    }
+
+    float GetLength(Vector3 position, MapData mapdata)
+    {
+        return SegmentLength + SegmentLength * (1 - mapdata.GetValue(position)) * 10;
     }
 }

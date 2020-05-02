@@ -16,7 +16,7 @@ public class Segment
     {
         StartNode = s;
         EndNode = e;
-        Direction = EndNode.Position - StartNode.Position;
+        Direction = (EndNode.Position - StartNode.Position).normalized;
         name = i;
     }
 
