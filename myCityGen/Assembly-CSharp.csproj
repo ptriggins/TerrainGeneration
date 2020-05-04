@@ -104,7 +104,7 @@
      <Compile Include="Assets\Scripts\MathHelper.cs" />
      <Compile Include="Assets\Scripts\MeshData.cs" />
      <Compile Include="Assets\Scripts\Node.cs" />
-     <Compile Include="Assets\Scripts\RoadNetwork.cs" />
+     <Compile Include="Assets\Scripts\RoadMap.cs" />
      <Compile Include="Assets\Scripts\Segment.cs" />
      <Compile Include="Assets\Scripts\TextureGenerator.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />

@@ -26,10 +26,10 @@ public class DensityMap : MonoBehaviour
     [SerializeField]
     public double Frequency = 1.25;
 
+    Display Display;
     public Tile[,] Tiles;
     private Color[] Colors;
     private Texture2D Texture;
-    private Display Display;
 
     public MapData MapData;
     public MeshData MeshData;
@@ -41,12 +41,9 @@ public class DensityMap : MonoBehaviour
     {
         Width = width;
         Length = length;
-        Display = (Display)FindObjectOfType(typeof(Display));
-        Instantiate();
-    }
 
-    public void Instantiate()
-    {
+        Display = (Display)FindObjectOfType(typeof(Display));
+
         Tiles = new Tile[Width, Length];
         Colors = new Color[Width * Length];
         MapData = new MapData(Width, Length);
@@ -103,8 +100,7 @@ public class DensityMap : MonoBehaviour
                 }
             }
         }
-        Colors[(int)MaxPosition.x + (int)MaxPosition.z * Length] = Color.blue;
-        Texture = TextureGenerator.GetDensityTexture(Width, Length, Colors);
+        Texture = TextureGenerator.GenerateDensityTexture(Width, Length, Colors);
 
         int CheckAndPush(int x, int z, int t, Stack<Vector2> stack)
         {

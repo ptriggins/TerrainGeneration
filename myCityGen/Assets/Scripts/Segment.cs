@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Segment
 {
     public Node StartNode;
@@ -22,7 +21,6 @@ public class Segment
 
     public GameObject Draw(Transform transform)
     {
-
         GameObject line = new GameObject();
         line.transform.SetParent(transform);
         line.AddComponent<LineRenderer>();
@@ -35,7 +33,6 @@ public class Segment
         l.endWidth = 1f;
         l.SetPosition(0, 10 * StartNode.Position);
         l.SetPosition(1, 10 * EndNode.Position);
-        //Debug.Log(Start + " : " + End);
 
         return line;
     }

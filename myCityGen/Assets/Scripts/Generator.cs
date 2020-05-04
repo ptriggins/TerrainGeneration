@@ -12,22 +12,22 @@ public class Generator : MonoBehaviour
     public int Length = 512;
 
     private DensityMap DensityMap;
-    private RoadNetwork RoadNetwork;
+    private RoadMap RoadMap;
 
     public void Generate()
     {
         DensityMap = (DensityMap)FindObjectOfType(typeof(DensityMap));
-        RoadNetwork = (RoadNetwork)FindObjectOfType(typeof(RoadNetwork));
+        RoadMap = (RoadMap)FindObjectOfType(typeof(RoadMap));
 
         DensityMap.Initialize(Width, Length);
         DensityMap.Generate();
         DensityMap.Draw();
 
-        if (RoadNetwork.Lines != null)
-            RoadNetwork.Clear();
+        if (RoadMap.Lines != null)
+            RoadMap.Clear();
 
-        RoadNetwork.Instantiate();
-        RoadNetwork.Generate(DensityMap.MaxPosition, DensityMap.MapData);
-        RoadNetwork.Draw();
+        RoadMap.Initialize();
+        RoadMap.Generate(DensityMap.MaxPosition, DensityMap.MapData);
+        RoadMap.Draw();
     }
 }
